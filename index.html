@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgriMind AI - Standalone Multilingual Agriculture Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700;800&family=Noto+Sans+Telugu:wght@400;600;700;800&family=Noto+Sans+Tamil:wght@400;600;700;800&family=Noto+Sans+Malayalam:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1B5E20;
+      --primary-dark: #0D3813;
+      --primary-light: #2E7D32;
+      --bg: #F8FAF8;
+      --surface: rgba(255, 255, 255, 0.88);
+      --surface-leaf: rgba(232, 245, 233, 0.85);
+      --border: rgba(220, 231, 220, 0.7);
+      --border-light: rgba(232, 239, 232, 0.6);
+      --text-primary: #1A1A1A;
+      --text-secondary: #2C3E2D;
+      --text-muted: #556B58;
+      --amber: #E65100;
+      --amber-bg: rgba(255, 248, 225, 0.92);
+      --soil: #5D4037;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Malayalam', 'Noto Sans Devanagari', -apple-system, sans-serif;
+    }
+
+    body {
+      background: url('agricultural-land-bg.jpg') center center / cover no-repeat fixed;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--text-primary);
+      position: relative;
+    }
+
+    /* Ambient dark overlay for the whole page */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(10, 25, 12, 0.45);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .app-frame {
+      width: 100%;
+      max-width: 480px;
+      height: 100vh;
+      max-height: 940px;
+      background: url('agricultural-land-bg.jpg') center center / cover no-repeat;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+    }
+
+    /* Soft translucent gradient lets the agricultural fields & sunrise shine through */
+    .backdrop-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(13, 56, 19, 0.3) 0%,
+        rgba(240, 248, 240, 0.45) 30%,
+        rgba(248, 250, 248, 0.65) 100%
+      );
+      backdrop-filter: blur(1.5px);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .app-content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    /* Header with Frosted Glass */
+    .top-header {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      background: #2E7D32;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(46,125,50,0.3);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      letter-spacing: -0.2px;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .new-chat-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(232, 245, 233, 0.9);
+      color: var(--primary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .new-chat-btn:hover {
+      background: #C8E6C9;
+    }
+
+    /* Multilingual Bar */
+    .lang-bar {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+      padding: 7px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .lang-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    .lang-chips-wrap {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .lang-chip {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--primary-dark);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 11.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .lang-chip:hover {
+      border-color: var(--primary);
+      background: #E8F5E9;
+    }
+
+    .lang-chip.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary-dark);
+    }
+
+    /* Main Container */
+    .screen-container {
+      flex: 1;
+      overflow-y: auto;
+      display: none;
+      flex-direction: column;
+      padding-bottom: 20px;
+    }
+
+    .screen-container.active {
+      display: flex;
+    }
+
+    /* Privacy Banner */
+    .privacy-banner {
+      background: rgba(255, 255, 255, 0.86);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .privacy-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--surface-leaf);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    .privacy-text h4 {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .privacy-text p {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Context Chips */
+    .context-panel {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      padding: 12px;
+      margin: 0 16px 12px 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .context-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .context-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary-dark);
+    }
+
+    .context-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .chip-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .chip-row-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      width: 58px;
+      flex-shrink: 0;
+    }
+
+    .chip {
+      background: rgba(240, 248, 240, 0.9);
+      color: var(--primary-dark);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .chip.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    /* Quick Questions */
+    .quick-section {
+      margin: 0 16px 12px 16px;
+    }
+
+    .quick-title {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: #FFFFFF;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .quick-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      padding: 10px;
+      cursor: pointer;
+      transition: all 0.15s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    .quick-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .quick-card h5 {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .quick-card p {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* Chat Messages */
+    .chat-messages {
+      flex: 1;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chat-row {
+      display: flex;
+      flex-direction: column;
+      max-width: 90%;
+    }
+
+    .chat-row.user {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .chat-row.ai {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .chat-bubble {
+      padding: 12px 14px;
+      border-radius: 16px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .chat-row.user .chat-bubble {
+      background: rgba(27, 94, 32, 0.94);
+      color: #FFF;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 4px 12px rgba(27,94,32,0.35);
+    }
+
+    .context-tag {
+      background: rgba(255,255,255,0.25);
+      color: #E8F5E9;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-bottom: 6px;
+      display: inline-block;
+    }
+
+    .chat-row.ai .chat-bubble {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    .chat-time {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.85);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+
+    /* Formatted AI Response */
+    .section-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      margin: 10px 0 6px 0;
+      border-left: 4px solid var(--primary);
+      background: var(--surface-leaf);
+    }
+
+    .section-badge.pest {
+      border-left-color: #C62828;
+      background: rgba(255, 235, 238, 0.9);
+      color: #B71C1C;
+    }
+
+    .section-badge.price {
+      border-left-color: var(--amber);
+      background: var(--amber-bg);
+      color: var(--amber);
+    }
+
+    .kvk-advisory {
+      background: rgba(255, 243, 224, 0.92);
+      border: 1px solid #FFE0B2;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin: 8px 0;
+      font-size: 11.5px;
+      color: #4E342E;
+      line-height: 1.4;
+    }
+
+    .kvk-advisory strong {
+      color: var(--amber);
+      text-transform: uppercase;
+      font-size: 10px;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .bullet-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin: 4px 0;
+      font-size: 13px;
+    }
+
+    .bullet-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--primary);
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Input Bar */
+    .input-bar {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255, 255, 255, 0.7);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .input-bar input {
+      flex: 1;
+      background: rgba(248, 250, 248, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .input-bar input:focus {
+      border-color: var(--primary);
+      background: #FFFFFF;
+    }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #FFF;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+      box-shadow: 0 2px 8px rgba(27,94,32,0.4);
+    }
+
+    .send-btn:disabled {
+      background: var(--text-muted);
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Screen 2: Crop Reference */
+    .crop-ref-screen {
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search-box {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      background: transparent;
+    }
+
+    .season-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .season-tab {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      padding: 8px 4px;
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: all 0.15s;
+    }
+
+    .season-tab.active {
+      background: var(--primary);
+      color: #FFF;
+      border-color: var(--primary-dark);
+    }
+
+    .crop-card {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .crop-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .crop-name {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .crop-hindi {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .crop-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    .crop-badge.kharif { background: #E8F5E9; color: #1B5E20; }
+    .crop-badge.rabi { background: #E1F5FE; color: #0D47A1; }
+    .crop-badge.zaid { background: #FFF8E1; color: #E65100; }
+
+    .crop-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin: 4px 0;
+      line-height: 1.4;
+    }
+
+    .crop-meta strong {
+      color: var(--primary-dark);
+    }
+
+    .crop-price-tag {
+      background: var(--amber-bg);
+      border: 1px solid #FFE082;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--amber);
+      margin: 8px 0;
+    }
+
+    .ask-ai-crop-btn {
+      width: 100%;
+      background: var(--primary);
+      color: #FFF;
+      border: none;
+      padding: 8px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 8px;
+      transition: background 0.15s;
+    }
+
+    .ask-ai-crop-btn:hover {
+      background: var(--primary-light);
+    }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255, 255, 255, 0.7);
+      display: flex;
+      height: 60px;
+    }
+
+    .nav-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      transition: all 0.15s;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-icon {
+      font-size: 18px;
+    }
+
+    .loading-banner {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(232, 245, 233, 0.92);
+      padding: 6px 12px;
+      border-radius: 6px;
+      margin: 4px 16px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--primary-dark);
+    }
+
+    .loading-banner.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #C8E6C9;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-frame">
+  <!-- Soft gradient overlay so agricultural fields remain beautifully visible -->
+  <div class="backdrop-overlay"></div>
+
+  <div class="app-content">
+    <!-- Top Bar -->
+    <div class="top-header">
+      <div class="brand-wrap">
+        <div class="status-dot"></div>
+        <div>
+          <div class="brand-title" id="lbl-app-title">AgriMind AI</div>
+          <div class="brand-sub" id="lbl-tagline">Direct Gemini • Stateless</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <a href="/AgriMind-AI.apk" download="AgriMind-AI.apk" style="text-decoration:none; background:linear-gradient(135deg, #2E7D32, #1B5E20); color:#FFF; font-size:11px; font-weight:700; padding:6px 10px; border-radius:20px; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.4);">
+          📲 <span>APK</span>
+        </a>
+        <button class="new-chat-btn" onclick="startNewChat()">
+          🔄 <span id="lbl-new-chat">New Chat</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Multilingual Language Switcher -->
+    <div class="lang-bar">
+      <span class="lang-label">🌐 ಭಾಷೆ / భాష / மொழி / ഭാഷ:</span>
+      <div class="lang-chips-wrap">
+        <button class="lang-chip active" onclick="setLanguage('en', this)">🇬🇧 English</button>
+        <button class="lang-chip" onclick="setLanguage('kn', this)">🌾 ಕನ್ನಡ</button>
+        <button class="lang-chip" onclick="setLanguage('te', this)">🌱 తెలుగు</button>
+        <button class="lang-chip" onclick="setLanguage('ta', this)">🌾 தமிழ்</button>
+        <button class="lang-chip" onclick="setLanguage('ml', this)">🌴 മലയാളം</button>
+        <button class="lang-chip" onclick="setLanguage('hi', this)">🇮🇳 हिंदी</button>
+      </div>
+    </div>
+
+    <!-- SCREEN 1: AGRI CHAT -->
+    <div id="screen-chat" class="screen-container active">
+      <!-- Direct APK Download Banner -->
+      <a href="/AgriMind-AI.apk" download="AgriMind-AI.apk" style="text-decoration:none; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg, rgba(27,94,32,0.95), rgba(46,125,50,0.9)); color:#FFFFFF; padding:10px 14px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 14px rgba(27,94,32,0.3); border:1px solid rgba(255,255,255,0.4); backdrop-filter:blur(8px);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:24px;">📲</div>
+          <div>
+            <div style="font-size:12.5px; font-weight:800; letter-spacing:0.2px;">Install AgriMind AI App (.APK)</div>
+            <div style="font-size:10.5px; opacity:0.92;">Standalone Android Package • 20+ Offline Crops • 100% Privacy</div>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,0.25); font-size:11px; font-weight:700; padding:6px 12px; border-radius:15px; border:1px solid rgba(255,255,255,0.6); white-space:nowrap;">Download ↓</div>
+      </a>
+
+      <!-- Privacy Banner -->
+      <div class="privacy-banner">
+        <div class="privacy-icon">🛡️</div>
+        <div class="privacy-text">
+          <h4 id="lbl-privacy-title">AgriMind Privacy Guarantee</h4>
+          <p id="lbl-privacy-desc">100% In-Memory • Zero Telemetry • Direct AI Connection</p>
+        </div>
+      </div>
+
+      <!-- Manual Context Selectors (Chips) -->
+      <div class="context-panel">
+        <div class="context-header">
+          <span class="context-title" id="lbl-context-title">🌾 Manual Field Context (Optional)</span>
+          <span style="font-size:10px; color:var(--text-muted); cursor:pointer;" onclick="clearContext()" id="lbl-clear-context">Clear</span>
+        </div>
+        <div class="context-sub" id="lbl-context-desc">No GPS used. Tap season or soil to personalize answers:</div>
+
+        <div class="chip-row">
+          <span class="chip-row-label" id="lbl-season-title">Season:</span>
+          <button class="chip" onclick="toggleContext('season', 'Kharif', this)" id="chip-kharif">Kharif (Jun-Oct)</button>
+          <button class="chip" onclick="toggleContext('season', 'Rabi', this)" id="chip-rabi">Rabi (Oct-Mar)</button>
+          <button class="chip" onclick="toggleContext('season', 'Zaid', this)" id="chip-zaid">Zaid (Mar-Jun)</button>
+        </div>
+
+        <div class="chip-row">
+          <span class="chip-row-label" id="lbl-soil-title">Soil:</span>
+          <button class="chip" onclick="toggleContext('soil', 'Black', this)" id="chip-black">Black (Regur)</button>
+          <button class="chip" onclick="toggleContext('soil', 'Alluvial', this)" id="chip-alluvial">Alluvial</button>
+          <button class="chip" onclick="toggleContext('soil', 'Red', this)" id="chip-red">Red</button>
+          <button class="chip" onclick="toggleContext('soil', 'Loamy', this)" id="chip-loamy">Loamy</button>
+          <button class="chip" onclick="toggleContext('soil', 'Sandy', this)" id="chip-sandy">Sandy</button>
+        </div>
+      </div>
+
+      <!-- 4 One-Tap Quick Questions -->
+      <div class="quick-section" id="quick-section">
+        <div class="quick-title" id="lbl-quick-title">⚡ One-Tap Quick Questions</div>
+        <div class="quick-grid">
+          <div class="quick-card" onclick="sendQuick(0)">
+            <h5 id="q0-title">Best Crops</h5>
+            <p id="q0-sub">Season & weather suitability</p>
+          </div>
+          <div class="quick-card" onclick="sendQuick(1)">
+            <h5 id="q1-title">Fertilizers & NPK</h5>
+            <p id="q1-sub">Dosage & schedule guide</p>
+          </div>
+          <div class="quick-card" onclick="sendQuick(2)">
+            <h5 id="q2-title">Crop Diseases</h5>
+            <p id="q2-sub">Medicine & pesticide guide</p>
+          </div>
+          <div class="quick-card" onclick="sendQuick(3)">
+            <h5 id="q3-title">Mandi Price & MSP</h5>
+            <p id="q3-sub">Market rates in ₹/quintal</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Chat Messages -->
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-row ai">
+          <div class="chat-bubble" id="welcome-msg-bubble">
+            <strong>Namaste Farmer! 🌾</strong><br>
+            I am <strong>AgriMind</strong>, your standalone AI agriculture assistant. Ask any question regarding Indian crops, sowing schedules, fertilizers, pesticides, or mandi prices.<br><br>
+            <em>All queries remain private and in-memory during this active session.</em>
+          </div>
+          <div class="chat-time">Just now</div>
+        </div>
+      </div>
+
+      <!-- Loading Banner -->
+      <div class="loading-banner" id="loading-banner">
+        <div class="spinner"></div>
+        <span id="lbl-loading-text">Consulting AgriMind AI for Indian farming best practices...</span>
+      </div>
+    </div>
+
+    <!-- SCREEN 2: CROP SEASON REFERENCE -->
+    <div id="screen-crops" class="screen-container">
+      <div class="crop-ref-screen">
+        <div class="search-box">
+          <span>🔍</span>
+          <input type="text" id="crop-search" placeholder="Search crop (Wheat, Dhan, Kapas, Moong...)" oninput="filterCrops()">
+        </div>
+
+        <div class="season-tabs">
+          <div class="season-tab active" onclick="setSeasonFilter('All', this)" id="tab-all">All (20+)</div>
+          <div class="season-tab" onclick="setSeasonFilter('Kharif', this)" id="tab-kharif">Kharif</div>
+          <div class="season-tab" onclick="setSeasonFilter('Rabi', this)" id="tab-rabi">Rabi</div>
+          <div class="season-tab" onclick="setSeasonFilter('Zaid', this)" id="tab-zaid">Zaid</div>
+        </div>
+
+        <div id="crop-list-container">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="input-bar" id="input-bar">
+      <input type="text" id="user-input" placeholder="Ask crop advice, disease medicine, NPK..." onkeypress="handleKeyPress(event)">
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+      <div class="nav-item active" id="nav-chat" onclick="switchTab('chat')">
+        <span class="nav-icon">💬</span>
+        <span id="nav-lbl-chat">Agri Chat</span>
+      </div>
+      <div class="nav-item" id="nav-crops" onclick="switchTab('crops')">
+        <span class="nav-icon">📖</span>
+        <span id="nav-lbl-crops">Crop Season Reference</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const I18N = {
+    en: {
+      title: "AgriMind AI",
+      tagline: "Direct Gemini • Stateless",
+      newChat: "New Chat",
+      privacyTitle: "AgriMind Privacy Guarantee",
+      privacyDesc: "100% In-Memory • Zero Telemetry • Direct AI Connection",
+      contextTitle: "🌾 Manual Field Context (Optional)",
+      contextDesc: "No GPS used. Tap season or soil to personalize answers:",
+      seasonTitle: "Season:",
+      soilTitle: "Soil:",
+      clear: "Clear",
+      quickTitle: "⚡ One-Tap Quick Questions",
+      inputPlaceholder: "Ask crop advice, disease medicine, NPK...",
+      loadingText: "Consulting AgriMind AI for Indian farming best practices...",
+      searchPlaceholder: "Search crop (Wheat, Dhan, Kapas, Moong...)",
+      tabChat: "Agri Chat",
+      tabCrops: "Crop Season Reference",
+      askAi: "Ask AI about",
+      welcome: "<strong>Namaste Farmer! 🌾</strong><br>I am <strong>AgriMind</strong>, your standalone AI agriculture assistant. Ask any question regarding Indian crops, sowing schedules, fertilizers, pesticides, or mandi prices.<br><br><em>All queries remain private and in-memory.</em>",
+      seasons: { kharif: "Kharif (Monsoon)", rabi: "Rabi (Winter)", zaid: "Zaid (Summer)" },
+      soils: { black: "Black (Regur)", alluvial: "Alluvial", red: "Red", loamy: "Loamy", sandy: "Sandy" },
+      questions: [
+        { title: "Best Crops", sub: "Season & weather suitability", prompt: "Best crops for this season & weather in India" },
+        { title: "Fertilizers & NPK", sub: "Dosage & schedule guide", prompt: "Recommended fertilizers & NPK schedule for current crops" },
+        { title: "Crop Diseases", sub: "Medicine & pesticide guide", prompt: "Common crop diseases and safe pesticide/medicine guide" },
+        { title: "Mandi Price & MSP", sub: "Market rates in ₹/quintal", prompt: "Expected mandi market price and official MSP range in ₹ per quintal" }
+      ]
+    },
+    kn: {
+      title: "ಅಗ್ರಿಮೈಂಡ್ AI",
+      tagline: "ಡೈರೆಕ್ಟ್ ಜೆಮಿನಿ • ಗೌಪ್ಯತೆ ರಕ್ಷಣೆ",
+      newChat: "ಹೊಸ ಚಾಟ್",
+      privacyTitle: "ಅಗ್ರಿಮೈಂಡ್ ಸಂಪೂರ್ಣ ಗೌಪ್ಯತೆ ಭರವಸೆ",
+      privacyDesc: "100% ಮೆಮೊರಿಯಲ್ಲಿ ಮಾತ್ರ • ಶೂನ್ಯ ಟ್ರ್ಯಾಕಿಂಗ್ • ನೇರ AI ಸಂಪರ್ಕ",
+      contextTitle: "🌾 ಕೃಷಿ ಕ್ಷೇತ್ರದ ಮಾಹಿತಿ (ಐಚ್ಛಿಕ)",
+      contextDesc: "GPS ಅಗತ್ಯವಿಲ್ಲ. ಉತ್ತಮ ಉತ್ತರದ ಸಲುವಾಗಿ ಋತು ಅಥವಾ ಮಣ್ಣನ್ನು ಆಯ್ಕೆಮಾಡಿ:",
+      seasonTitle: "ಋತು:",
+      soilTitle: "ಮಣ್ಣು:",
+      clear: "ತೆರವು",
+      quickTitle: "⚡ ಒಂದು ಟ್ಯಾಪ್ ತ್ವರಿತ ಪ್ರಶ್ನೆಗಳು",
+      inputPlaceholder: "ಬೆಳೆ ಸಲಹೆ, ರೋಗ ನಿವಾರಣೆ, ರಸಗೊಬ್ಬರದ ಬಗ್ಗೆ ಕೇಳಿ...",
+      loadingText: "ಕೃಷಿ ತಜ್ಞರ ಸಲಹೆ ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...",
+      searchPlaceholder: "ಬೆಳೆ ಹುಡುಕಿ (ಗೋಧಿ, ಭತ್ತ, ಹತ್ತಿ, ಸೋಯಾಬೀನ್...)",
+      tabChat: "ಕೃಷಿ ಚಾಟ್",
+      tabCrops: "ಬೆಳೆ ಋತು ಕೈಪಿಡಿ",
+      askAi: "AI ಸಲಹೆ ಕೇಳಿ",
+      welcome: "<strong>ನಮಸ್ಕಾರ ರೈತ ಬಾಂಧವರೇ! 🌾</strong><br>ನಾನು ನಿಮ್ಮ <strong>ಅಗ್ರಿಮೈಂಡ್ AI</strong> ಕೃಷಿ ಮಾರ್ಗದರ್ಶಿ. ಬೆಳೆ ಬಿತ್ತನೆ, ಗೊಬ್ಬರದ ಪ್ರಮಾಣ, ಕೀಟ ರೋಗ ನಿವಾರಣೆ ಹಾಗೂ ಮಾರುಕಟ್ಟೆ ಧಾರಣೆ ಬಗ್ಗೆ ಮುಕ್ತವಾಗಿ ಕೇಳಿ.<br><br><em>ನಿಮ್ಮ ಪ್ರಶ್ನೆಗಳು ಸಂಪೂರ್ಣ ಖಾಸಗಿಯಾಗಿವೆ.</em>",
+      seasons: { kharif: "ಖಾರಿಫ್ (ಮುಂಗಾರು)", rabi: "ರಬಿ (ಹಿಂಗಾರು)", zaid: "ಜಾಯಿದ್ (ಬೇಸಿಗೆ)" },
+      soils: { black: "ಕಪ್ಪು ಮಣ್ಣು", alluvial: "ಮೆಕ್ಕಲು ಮಣ್ಣು", red: "ಕೆಂಪು ಮಣ್ಣು", loamy: "ಗೋಡು ಮಣ್ಣು", sandy: "ಮರಳು ಮಣ್ಣು" },
+      questions: [
+        { title: "ಉತ್ತಮ ಬೆಳೆಗಳು", sub: "ಋತು ಮತ್ತು ಹವಾಮಾನಕ್ಕೆ ಸೂಕ್ತ", prompt: "ಈ ಋತುವಿನಲ್ಲಿ ಮತ್ತು ಹವಾಮಾನದಲ್ಲಿ ಬೆಳೆಯಲು ಸೂಕ್ತವಾದ ಬೆಳೆಗಳು ಯಾವುವು?" },
+        { title: "ಗೊಬ್ಬರ & NPK", sub: "ರಸಗೊಬ್ಬರ ಪ್ರಮಾಣ ಮತ್ತು ಬಳಕೆ", prompt: "ಬೆಳೆಗಳಿಗೆ ಶಿಫಾರಸು ಮಾಡಿದ ರಸಗೊಬ್ಬರ ಪ್ರಮಾಣ ಮತ್ತು NPK ವೇಳಾಪಟ್ಟಿ ತಿಳಿಸಿ" },
+        { title: "ಬೆಳೆ ರೋಗಗಳು", sub: "ಕೀಟನಾಶಕ ಔಷಧ ಮಾರ್ಗದರ್ಶಿ", prompt: "ಮುಖ್ಯ ಬೆಳೆ ರೋಗಗಳು ಮತ್ತು ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK) ಆಧಾರಿತ ಔಷಧೋಪಚಾರ ತಿಳಿಸಿ" },
+        { title: "ಮಂಡಿ ಬೆಲೆ & MSP", sub: "ಕ್ವಿಂಟಲ್‌ಗೆ ಮಾರುಕಟ್ಟೆ ದರ", prompt: "ಕ್ವಿಂಟಲ್‌ಗೆ ನಿರೀಕ್ಷಿತ ಮಂಡಿ ಮಾರುಕಟ್ಟೆ ದರ ಮತ್ತು ಸರ್ಕಾರದ ಬೆಂಬಲ ಬೆಲೆ (MSP) ವಿವರ" }
+      ]
+    },
+    te: {
+      title: "అగ్రిమైండ్ AI",
+      tagline: "డైరెక్ట్ జెమిని • గోప్యత రక్షణ",
+      newChat: "కొత్త చాట్",
+      privacyTitle: "అగ్రిమైండ్ గోప్యతా రక్షణ హామీ",
+      privacyDesc: "100% మెమరీలో మాత్రమే • జీరో ట్రాకింగ్ • డైరెక్ట్ AI",
+      contextTitle: "🌾 క్షేత్ర సమాచారం (ఐచ్ఛికం)",
+      contextDesc: "GPS వాడము. మెరుగైన సమాధానాల కోసం సీజన్ లేదా నేల రకాన్ని ఎంచుకోండి:",
+      seasonTitle: "సీజన్:",
+      soilTitle: "నేల:",
+      clear: "క్లియర్",
+      quickTitle: "⚡ ఒక్క ట్యాప్‌తో ప్రశ్నలు",
+      inputPlaceholder: "పంట సలహాలు, తెగుళ్ళ మందులు, ఎరువుల వివరాలు అడగండి...",
+      loadingText: "వ్యవసాయ నిపుణుల సలహాలు సేకరిస్తున్నాము...",
+      searchPlaceholder: "పంట పేరు వెతకండి (వరి, గోధుమ, పత్తి, మిరప...)",
+      tabChat: "వ్యవసాయ చాట్",
+      tabCrops: "పంట కాలాల సమాచారం",
+      askAi: "AI సలహా అడగండి",
+      welcome: "<strong>రైతు సోదరులకు నమస్కారం! 🌾</strong><br>నేను మీ <strong>అగ్రిమైండ్ AI</strong> వ్యవసాయ సహాయకుడిని. పంట సాగు, నేల ఆరోగ్యం, ఎరువులు మరియు తెగుళ్ళ నివారణపై ఏ ప్రశ్నైనా అడగండి.<br><br><em>మీ సంభాషణలు పూర్తిగా ప్రైవేట్.</em>",
+      seasons: { kharif: "ఖరీఫ్ (వర్షాకాలం)", rabi: "రబీ (శీతాకాలం)", zaid: "జాయెద్ (వేసవికాలం)" },
+      soils: { black: "నల్లరేగడి నేల", alluvial: "ఒండ్రు నేల", red: "ఎర్ర నేల", loamy: "దుబ్బ నేల", sandy: "ఇసుక నేల" },
+      questions: [
+        { title: "మంచి పంటలు", sub: "ఈ సీజన్‌కు అనుకూలమైన పంటలు", prompt: "ప్రస్తుత సీజన్ మరియు వాతావరణానికి అనువైన ఉత్తమ పంటలు ఏవి?" },
+        { title: "ఎరువులు & NPK", sub: "మోతాదు మరియు వాడే సమయం", prompt: "పంటలకు సిఫార్సు చేసిన ఎరువులు మరియు NPK మోతాదు షెడ్యూల్ తెలపండి" },
+        { title: "పంట తెగుళ్ళు", sub: "తెగుళ్ళ నివారణ & పురుగు మందులు", prompt: "ప్రధాన పంట తెగుళ్ళు మరియు కృషి విజ్ఞాన కేంద్రం (KVK) ఆమోదిత మందుల వివరాలు" },
+        { title: "మార్కెట్ ధర & MSP", sub: "మండి ధరలు మరియు మద్దతు ధర", prompt: "క్వింటాల్‌కు ఆశించే మార్కెట్ (మండి) ధర మరియు కనీస మద్దతు ధర (MSP) వివరాలు" }
+      ]
+    },
+    ta: {
+      title: "அக்ரிமைண்ட் AI",
+      tagline: "நேரடி ஜெமினி • தனியுரிமை பாதுகாப்பு",
+      newChat: "புதிய அரட்டை",
+      privacyTitle: "அக்ரிமைண்ட் தனியுரிமை உத்தரவாதம்",
+      privacyDesc: "100% மெமரியில் மட்டும் • டிராக்கிங் இல்லை • நேரடி AI",
+      contextTitle: "🌾 விவசாய கள சூழல் (விருப்பம்)",
+      contextDesc: "GPS தேவையில்லை. துல்லியமான பதிலுக்கு பருவம் அல்லது மண் வகையைத் தேர்வு செய்யவும்:",
+      seasonTitle: "பருவம்:",
+      soilTitle: "மண் வகை:",
+      clear: "அழி",
+      quickTitle: "⚡ ஒரே தட்டலில் கேள்விகள்",
+      inputPlaceholder: "பயிர் ஆலோசனை, நோய் மருத்துவம், உரம் பற்றி கேளுங்கள்...",
+      loadingText: "வேளாண் நிபுணர்களின் ஆலோசனையைப் பெறுகிறது...",
+      searchPlaceholder: "பயிர் பெயரைத் தேடுங்கள் (நெல், கோதுமை, பருத்தி, உளுந்து...)",
+      tabChat: "விவசாய அரட்டை",
+      tabCrops: "பயிர் பருவக் குறிப்பு",
+      askAi: "AI ஆலோசனை பெறு",
+      welcome: "<strong>வணக்கம் விவசாய பெருமக்களே! 🌾</strong><br>நான் உங்கள் <strong>அக்ரிமைண்ட் AI</strong> விவசாய வழிகாட்டி. சாகுபடி, மண் வளம், உரம் மற்றும் பூச்சி மேலாண்மை பற்றி கேளுங்கள்.<br><br><em>உங்கள் தகவல்கள் பாதுகாப்பானது.</em>",
+      seasons: { kharif: "காரீப் (மழைக்காலம்)", rabi: "ரபி (குளிர்காலம்)", zaid: "ஜைத் (கோடைகாலம்)" },
+      soils: { black: "கரிசல் மண்", alluvial: "வண்டல் மண்", red: "செம்மண்", loamy: "வண்டல் கலந்த மண்", sandy: "மணல் மண்" },
+      questions: [
+        { title: "சிறந்த பயிர்கள்", sub: "பருவத்திற்கும் வானிலைக்கும் ஏற்றது", prompt: "இந்த பருவத்திற்கும் தட்பவெப்ப நிலைக்கும் ஏற்ற சிறந்த பயிர்கள் எவை?" },
+        { title: "உரங்கள் & NPK", sub: "பரிந்துரைக்கப்பட்ட உரம் மற்றும் அளவு", prompt: "பயிர்களுக்கான பரிந்துரைக்கப்பட்ட உர அளவு மற்றும் NPK அட்டவணை என்ன?" },
+        { title: "பயிர் நோய்கள்", sub: "பூச்சிக்கொல்லி மற்றும் நோய் மேலாண்மை", prompt: "முக்கிய பயிர் நோய்கள் மற்றும் வேளாண் அறிவியல் மைய (KVK) மருந்துகள்" },
+        { title: "சந்தை விலை & MSP", sub: "மண்டி விலை மற்றும் ஆதார விலை", prompt: "குவிண்டாலுக்கு எதிர்பார்க்கப்படும் சந்தை (மண்டி) விலை மற்றும் குறைந்தபட்ச ஆதரவு விலை (MSP)" }
+      ]
+    },
+    ml: {
+      title: "അഗ്രിമൈൻഡ് AI",
+      tagline: "ഡയറക്ട് ജെമിനി • സ്വകാര്യത സുരക്ഷിതം",
+      newChat: "പുതിയ ചാറ്റ്",
+      privacyTitle: "അഗ്രിമൈൻഡ് സ്വകാര്യതാ ഉറപ്പ്",
+      privacyDesc: "100% മെമ്മറിയിൽ മാത്രം • ട്രാക്കിംഗ് ഇല്ല • പൂർണ്ണ സ്വകാര്യത",
+      contextTitle: "🌾 കൃഷി വിവരങ്ങൾ (ഓപ്ഷണൽ)",
+      contextDesc: "GPS ആവശ്യമില്ല. കൃത്യമായ ഉത്തരങ്ങൾക്ക് സീസണോ മണ്ണോ തിരഞ്ഞെടുക്കുക:",
+      seasonTitle: "സീസൺ:",
+      soilTitle: "മണ്ണ്:",
+      clear: "മായ്ക്കുക",
+      quickTitle: "⚡ പെട്ടെന്നുള്ള ചോദ്യങ്ങൾ",
+      inputPlaceholder: "വിള ഉപദേശം, രോഗ പ്രതിവിധി, വളങ്ങൾ എന്നിവ ചോദിക്കൂ...",
+      loadingText: "കൃഷി വിദഗ്ദ്ധരുടെ ഉപദേശം ലഭ്യമാക്കുന്നു...",
+      searchPlaceholder: "വിള തിരയുക (നെല്ല്, ഗോതമ്പ്, പരുത്തി, വാഴ...)",
+      tabChat: "കൃഷി ചാറ്റ്",
+      tabCrops: "വിള സീസൺ ഗൈഡ്",
+      askAi: "AI യോട് ചോദിക്കൂ",
+      welcome: "<strong>നമസ്കാരം കർഷക സുഹൃത്തേ! 🌾</strong><br>ഞാൻ നിങ്ങളുടെ <strong>അഗ്രിമൈൻഡ് AI</strong> സഹായി. കൃഷി രീതികൾ, വളപ്രയോഗം, രോഗ നിയന്ത്രണം എന്നിവയെക്കുറിച്ച് ചോദിക്കാം.<br><br><em>നിങ്ങളുടെ സംഭാഷണങ്ങൾ തികച്ചും സ്വകാര്യമാണ്.</em>",
+      seasons: { kharif: "ഖാരിഫ് (മഴക്കാലം)", rabi: "റബി (ശീതകാലം)", zaid: "സായിദ് (വേനൽക്കാലം)" },
+      soils: { black: "കരിമണ്ണ്", alluvial: "എക്കൽ മണ്ണ്", red: "ചെമ്മണ്ണ്", loamy: "പശിമരാശി മണ്ണ്", sandy: "മണൽ മണ്ണ്" },
+      questions: [
+        { title: "മികച്ച വിളകൾ", sub: "സീസണും കാലാവസ്ഥയും അനുസരിച്ച്", prompt: "ഈ സീസണിലും കാലാവസ്ഥയിലും കൃഷി ചെയ്യാൻ അനുയോജ്യമായ വിളകൾ ഏവ?" },
+        { title: "വളങ്ങളും NPK യും", sub: "വളപ്രയോഗവും അളവുകളും", prompt: "വിളകൾക്ക് ശുപാർശ ചെയ്യുന്ന വളങ്ങളും NPK ഷെഡ്യൂളും വിശദമാക്കുക" },
+        { title: "വിള രോഗങ്ങൾ", sub: "കീട നിയന്ത്രണവും മരുന്നുകളും", prompt: "പ്രധാന വിള രോഗങ്ങളും കൃഷി വിജ്ഞാൻ കേന്ദ്രം (KVK) നിർദ്ദേശിക്കുന്ന മരുന്നുകളും" },
+        { title: "മാർക്കറ്റ് വില & MSP", sub: "വിപണി വിലയും താങ്ങുവിലയും", prompt: "ക്വിന്റലിന് പ്രതീക്ഷിക്കുന്ന മാർക്കറ്റ് (മണ്ടി) വിലയും താങ്ങുവിലയും (MSP) വിവരിക്കുക" }
+      ]
+    },
+    hi: {
+      title: "एग्रीमाइंड AI",
+      tagline: "डायरेक्ट जेमिनी • पूर्णतः गोपनीय",
+      newChat: "नई चैट",
+      privacyTitle: "एग्रीमाइंड गोपनीयता गारंटी",
+      privacyDesc: "100% मेमोरी में • शून्य ट्रैकिंग • डायरेक्ट AI",
+      contextTitle: "🌾 खेत संदर्भ (वैकल्पिक)",
+      contextDesc: "GPS की जरूरत नहीं। सटीक उत्तर के लिए मौसम या मिट्टी चुनें:",
+      seasonTitle: "मौसम:",
+      soilTitle: "मिट्टी:",
+      clear: "साफ़ करें",
+      quickTitle: "⚡ एक-टैप त्वरित प्रश्न",
+      inputPlaceholder: "फसल सलाह, रोग दवा, खाद-उर्वरक के बारे में पूछें...",
+      loadingText: "कृषि विशेषज्ञ सलाह तैयार हो रही है...",
+      searchPlaceholder: "फसल खोजें (गेहूं, धान, कपास, सोयाबीन...)",
+      tabChat: "कृषि चैट",
+      tabCrops: "फसल मौसम मार्गदर्शिका",
+      askAi: "AI से पूछें",
+      welcome: "<strong>राम-राम किसान भाई! 🌾</strong><br>मैं आपका <strong>एग्रीमाइंड AI</strong> कृषि मार्गदर्शक हूँ। बुवाई, खाद, सिंचाई और फसल सुरक्षा से जुड़ा कोई भी प्रश्न पूछें।<br><br><em>सभी बातचीत पूरी तरह सुरक्षित और निजी है।</em>",
+      seasons: { kharif: "खरीफ (मानसून)", rabi: "रबी (सर्दियों)", zaid: "जायद (गर्मी)" },
+      soils: { black: "काली मिट्टी", alluvial: "जलोढ़ मिट्टी", red: "लाल मिट्टी", loamy: "दोमट मिट्टी", sandy: "बलुई मिट्टी" },
+      questions: [
+        { title: "सर्वोत्तम फसलें", sub: "मौसम व जलवायु के अनुकूल", prompt: "इस मौसम और जलवायु के लिए सर्वोत्तम फसलें कौन सी हैं?" },
+        { title: "उर्वरक और NPK", sub: "मात्रा और प्रयोग का सही समय", prompt: "फसलों के लिए अनुशंसित उर्वरक और NPK समय-सारणी क्या है?" },
+        { title: "फसल रोग व दवा", sub: "रोग निवारण और दवा निर्देश", prompt: "प्रमुख फसल रोग एवं कृषि विज्ञान केंद्र (KVK) प्रमाणित कीटनाशक/दवा मार्गदर्शिका" },
+        { title: "मंडी भाव और MSP", sub: "अनुमानित भाव व समर्थन मूल्य", prompt: "प्रति क्विंटल अनुमानित मंडी भाव और न्यूनतम समर्थन मूल्य (MSP) दायरा क्या है?" }
+      ]
+    }
+  };
+
+  const CROPS_DATA = [
+    {
+      name: "Rice / Paddy",
+      hindi: "धान / ಭತ್ತ / వరి / நெல் / നെല്ല്",
+      season: "Kharif",
+      sowing: "June – July",
+      soil: "Clayey or alluvial loam with high water holding",
+      npk: "NPK 120:60:40 kg/ha + Zinc Sulphate (25 kg/ha)",
+      diseases: "Blast, Bacterial Leaf Blight, Stem Borer",
+      price: "₹2,300 – ₹2,800 / quintal (MSP ~₹2,300)",
+      prompt: "What is the complete cultivation schedule, NPK fertilizer split, blast disease management, and expected mandi price for Rice / Paddy?"
+    },
+    {
+      name: "Cotton",
+      hindi: "कपास / ಹತ್ತಿ / పత్తి / பருத்தி / പരുത്തി",
+      season: "Kharif",
+      sowing: "May – June",
+      soil: "Deep black cotton soil (Regur) or fertile loam",
+      npk: "NPK 100:50:50 kg/ha + Magnesium Sulphate foliar spray",
+      diseases: "Pink Bollworm, Whitefly, Bacterial Blight",
+      price: "₹6,800 – ₹7,800 / quintal (MSP ~₹7,521)",
+      prompt: "Provide an effective pesticide guide for Pink Bollworm in Cotton and fertilizer schedule for black soil."
+    },
+    {
+      name: "Wheat",
+      hindi: "गेहूं / ಗೋಧಿ / గోధుమ / கோதுமை / ഗോതമ്പ്",
+      season: "Rabi",
+      sowing: "Late October – November (Nov 1–15)",
+      soil: "Well-drained fertile clay loam, alluvial soil",
+      npk: "NPK 120:60:40 kg/ha (1/2 N + full P & K basal)",
+      diseases: "Yellow / Brown Rust, Loose Smut, Karnal Bunt, Aphids",
+      price: "₹2,350 – ₹2,600 / quintal (MSP ~₹2,425)",
+      prompt: "What is the irrigation schedule and NPK fertilizer recommendation for Wheat across different growth stages?"
+    },
+    {
+      name: "Chickpea / Bengal Gram",
+      hindi: "चना / ಕಡಲೆ / శనగలు / கொண்டைக்கடலை / കടല",
+      season: "Rabi",
+      sowing: "October – November",
+      soil: "Well-drained medium to heavy black soils, alluvial",
+      npk: "NPK 20:50:20 kg/ha + 20 kg Sulphur + Trichoderma",
+      diseases: "Fusarium Wilt, Collar Rot, Pod Borer",
+      price: "₹5,400 – ₹6,200 / quintal (MSP ~₹5,650)",
+      prompt: "What is the best IPM practice for Pod Borer in Chickpea and seed treatment for wilt?"
+    },
+    {
+      name: "Watermelon",
+      hindi: "तरबूज / ಕಲ್ಲಂಗಡಿ / పుచ్చకాయ / தர்பூசணி / തണ്ണീർമത്തൻ",
+      season: "Zaid",
+      sowing: "February – March",
+      soil: "Sandy loam or riverbed silt soils with good drainage",
+      npk: "NPK 100:60:60 kg/ha + Boron spray at fruit setting",
+      diseases: "Fruit Fly, Downy Mildew, Powdery Mildew",
+      price: "₹800 – ₹1,500 / quintal (₹8–₹15/kg)",
+      prompt: "How to protect Watermelon from Fruit Fly and increase fruit sweetness using fertilizer splits?"
+    },
+    {
+      name: "Summer Moong",
+      hindi: "मूंग दाल / ಹೆಸರು ಕಾಳು / పెసలు / பாசிப்பயறு / ചെറുപയർ",
+      season: "Zaid",
+      sowing: "March – Mid April",
+      soil: "Well-drained loamy to sandy loam soils",
+      npk: "NPK 15:40:20 kg/ha + Rhizobium seed treatment",
+      diseases: "Yellow Mosaic Virus, Cercospora Leaf Spot",
+      price: "₹7,800 – ₹8,800 / quintal (MSP ~₹8,682)",
+      prompt: "How to control Whitefly and Yellow Mosaic Virus in Summer Moong?"
+    }
+  ];
+
+  let currentLang = 'en';
+  let activeContext = { season: null, soil: null };
+  let currentSeasonFilter = 'All';
+
+  function setLanguage(lang, btn) {
+    currentLang = lang;
+    document.querySelectorAll('.lang-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    applyTranslations();
+  }
+
+  function applyTranslations() {
+    const t = I18N[currentLang] || I18N.en;
+
+    document.getElementById('lbl-app-title').textContent = t.title;
+    document.getElementById('lbl-tagline').textContent = t.tagline;
+    document.getElementById('lbl-new-chat').textContent = t.newChat;
+    document.getElementById('lbl-privacy-title').textContent = t.privacyTitle;
+    document.getElementById('lbl-privacy-desc').textContent = t.privacyDesc;
+    document.getElementById('lbl-context-title').textContent = t.contextTitle;
+    document.getElementById('lbl-context-desc').textContent = t.contextDesc;
+    document.getElementById('lbl-season-title').textContent = t.seasonTitle;
+    document.getElementById('lbl-soil-title').textContent = t.soilTitle;
+    document.getElementById('lbl-clear-context').textContent = t.clear;
+    document.getElementById('lbl-quick-title').textContent = t.quickTitle;
+    document.getElementById('user-input').placeholder = t.inputPlaceholder;
+    document.getElementById('lbl-loading-text').textContent = t.loadingText;
+    document.getElementById('crop-search').placeholder = t.searchPlaceholder;
+    document.getElementById('nav-lbl-chat').textContent = t.tabChat;
+    document.getElementById('nav-lbl-crops').textContent = t.tabCrops;
+
+    document.getElementById('chip-kharif').textContent = t.seasons.kharif;
+    document.getElementById('chip-rabi').textContent = t.seasons.rabi;
+    document.getElementById('chip-zaid').textContent = t.seasons.zaid;
+
+    document.getElementById('chip-black').textContent = t.soils.black;
+    document.getElementById('chip-alluvial').textContent = t.soils.alluvial;
+    document.getElementById('chip-red').textContent = t.soils.red;
+    document.getElementById('chip-loamy').textContent = t.soils.loamy;
+    document.getElementById('chip-sandy').textContent = t.soils.sandy;
+
+    t.questions.forEach((q, idx) => {
+      document.getElementById(`q${idx}-title`).textContent = q.title;
+      document.getElementById(`q${idx}-sub`).textContent = q.sub;
+    });
+
+    renderCrops();
+  }
+
+  function toggleContext(type, value, btn) {
+    if (activeContext[type] === value) {
+      activeContext[type] = null;
+      btn.classList.remove('active');
+    } else {
+      activeContext[type] = value;
+      const row = btn.parentElement;
+      row.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
+
+  function clearContext() {
+    activeContext = { season: null, soil: null };
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  }
+
+  function startNewChat() {
+    const t = I18N[currentLang] || I18N.en;
+    if (confirm("Start fresh chat? All current messages will be cleared from memory.")) {
+      const container = document.getElementById('chat-messages');
+      container.innerHTML = `
+        <div class="chat-row ai">
+          <div class="chat-bubble">
+            ${t.welcome}
+          </div>
+          <div class="chat-time">Just now</div>
+        </div>
+      `;
+      clearContext();
+      document.getElementById('user-input').value = '';
+    }
+  }
+
+  function sendQuick(idx) {
+    const t = I18N[currentLang] || I18N.en;
+    const q = t.questions[idx];
+    if (q) {
+      document.getElementById('user-input').value = q.prompt;
+      sendMessage();
+    }
+  }
+
+  function handleKeyPress(e) {
+    if (e.key === 'Enter') sendMessage();
+  }
+
+  function formatAiResponse(text) {
+    const lines = text.split('\n');
+    let html = '';
+
+    lines.forEach(line => {
+      const trimmed = line.trim();
+      if (!trimmed) return;
+
+      if (/(?:season|sowing|ಋತು|సీజన్|பருவம்|സീസൺ|मौसम)/i.test(trimmed) && (trimmed.startsWith('*') || trimmed.startsWith('(') || trimmed.startsWith('#'))) {
+        html += `<div class="section-badge">📅 ${clean(trimmed)}</div>`;
+      } else if (/(?:fertilizer|nutrient|npk|ಗೊಬ್ಬರ|ఎరువులు|உரங்கள்|വളങ്ങൾ|खाद|उर्वरक)/i.test(trimmed) && (trimmed.startsWith('*') || trimmed.startsWith('(') || trimmed.startsWith('#'))) {
+        html += `<div class="section-badge">🧪 ${clean(trimmed)}</div>`;
+      } else if (/(?:pest|disease|medicine|pesticide|ರೋಗ|తెగుళ్ళు|நோய்|രോഗങ്ങൾ|कीट|दवा)/i.test(trimmed) && (trimmed.startsWith('*') || trimmed.startsWith('(') || trimmed.startsWith('#'))) {
+        html += `<div class="section-badge pest">🛡️ ${clean(trimmed)}</div>`;
+      } else if (/(?:price|market|mandi|msp|ಬೆಲೆ|ధర|விலை|വില|भाव)/i.test(trimmed) && (trimmed.startsWith('*') || trimmed.startsWith('(') || trimmed.startsWith('#'))) {
+        html += `<div class="section-badge price">💰 ${clean(trimmed)}</div>`;
+      }
+      else if (/(?:krishi vigyan kendra|kvk|exact dosage|ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ|కృషి విజ్ఞాన కేంద్రం|வேளாண் அறிவியல் மையம்|കൃഷി വിജ്ഞാൻ കേന്ദ്രം|कृषि विज्ञान केंद्र)/i.test(trimmed) && trimmed.length > 20) {
+        html += `<div class="kvk-advisory"><strong>⚠️ KVK Field Advisory</strong>${clean(trimmed.replace(/^[-*•]\s*/, ''))}</div>`;
+      }
+      else if (trimmed.startsWith('* ') || trimmed.startsWith('- ') || trimmed.startsWith('• ')) {
+        html += `<div class="bullet-item"><div class="bullet-dot"></div><div>${bold(trimmed.replace(/^[-*•]\s*/, ''))}</div></div>`;
+      }
+      else {
+        html += `<p style="margin:4px 0;">${bold(trimmed)}</p>`;
+      }
+    });
+
+    return html;
+  }
+
+  function clean(str) {
+    return str.replace(/^#+\s*/, '').replace(/^\*\*|\*\*$/g, '').replace(/^[-*•]\s*/, '');
+  }
+
+  function bold(str) {
+    return str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const chatContainer = document.getElementById('chat-messages');
+    let contextLabel = '';
+    if (activeContext.season || activeContext.soil) {
+      const parts = [];
+      if (activeContext.season) parts.push(`${activeContext.season} Season`);
+      if (activeContext.soil) parts.push(`${activeContext.soil} Soil`);
+      contextLabel = `<div class="context-tag">🏷️ ${parts.join(' • ')}</div><br>`;
+    }
+
+    const userHtml = `
+      <div class="chat-row user">
+        <div class="chat-bubble">
+          ${contextLabel}${escapeHtml(text)}
+        </div>
+        <div class="chat-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+      </div>
+    `;
+    chatContainer.insertAdjacentHTML('beforeend', userHtml);
+    input.value = '';
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    document.getElementById('loading-banner').classList.add('active');
+    document.getElementById('send-btn').disabled = true;
+
+    const GEMINI_DIRECT_KEY = window.GEMINI_API_KEY || '';
+
+    async function callGeminiDirectly(promptText, activeContext, lang) {
+      const langData = LANG_MAP[lang] || LANG_MAP.en;
+      let finalSystemInstruction = BASE_SYSTEM_INSTRUCTION;
+      if (lang !== 'en') {
+        finalSystemInstruction += `\n\nCRITICAL LANGUAGE REQUIREMENT: You MUST answer the user entirely in ${langData.name} (${langData.native}) script. Use authentic rural agricultural vocabulary so it is directly understandable for farmers.`;
+      }
+
+      let fullPrompt = promptText;
+      const contextParts = [];
+      if (activeContext?.season) contextParts.push(`Season: ${activeContext.season}`);
+      if (activeContext?.soil) contextParts.push(`Soil Type: ${activeContext.soil}`);
+      if (lang !== 'en') contextParts.push(`Response Language: ${langData.name} (${langData.native})`);
+
+      if (contextParts.length > 0) {
+        fullPrompt = `[Context: ${contextParts.join(' | ')}]\n\nFarmer Query: ${promptText.trim()}`;
+      }
+
+      const payload = {
+        systemInstruction: {
+          parts: [{ text: finalSystemInstruction }]
+        },
+        contents: [
+          { role: 'user', parts: [{ text: fullPrompt }] }
+        ],
+        generationConfig: {
+          temperature: 0.3,
+          topP: 0.9,
+          maxOutputTokens: 1200
+        }
+      };
+
+      const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+      for (const model of modelsToTry) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_DIRECT_KEY}`;
+          const gRes = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (gRes.ok) {
+            const data = await gRes.json();
+            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (reply) return reply;
+          }
+        } catch (e) {
+          console.warn(`Model ${model} failed:`, e);
+        }
+      }
+      throw new Error('Unable to reach Gemini API directly. Please check your internet connection.');
+    }
+
+    try {
+      let replyText = '';
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: text,
+            context: activeContext,
+            language: currentLang
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.reply) replyText = data.reply;
+        }
+      } catch (serverErr) {
+        console.log('Local server unreachable, connecting directly to Gemini AI cloud...');
+      }
+
+      if (!replyText) {
+        replyText = await callGeminiDirectly(text, activeContext, currentLang);
+      }
+
+      document.getElementById('loading-banner').classList.remove('active');
+      document.getElementById('send-btn').disabled = false;
+
+      const replyHtml = `
+        <div class="chat-row ai">
+          <div class="chat-bubble">
+            ${formatAiResponse(replyText)}
+          </div>
+          <div class="chat-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • AgriMind AI</div>
+        </div>
+      `;
+      chatContainer.insertAdjacentHTML('beforeend', replyHtml);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+    } catch (err) {
+      document.getElementById('loading-banner').classList.remove('active');
+      document.getElementById('send-btn').disabled = false;
+      chatContainer.insertAdjacentHTML('beforeend', `
+        <div class="chat-row ai">
+          <div class="chat-bubble" style="border-color:#C62828; background:#FFEBEE;">
+            ⚠️ Network Error: ${err.message}.
+          </div>
+        </div>
+      `);
+    }
+  }
+
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function switchTab(tab) {
+    const chatScreen = document.getElementById('screen-chat');
+    const cropScreen = document.getElementById('screen-crops');
+    const inputBar = document.getElementById('input-bar');
+    const navChat = document.getElementById('nav-chat');
+    const navCrops = document.getElementById('nav-crops');
+
+    if (tab === 'chat') {
+      chatScreen.classList.add('active');
+      cropScreen.classList.remove('active');
+      inputBar.style.display = 'flex';
+      navChat.classList.add('active');
+      navCrops.classList.remove('active');
+    } else {
+      chatScreen.classList.remove('active');
+      cropScreen.classList.add('active');
+      inputBar.style.display = 'none';
+      navChat.classList.remove('active');
+      navCrops.classList.add('active');
+      renderCrops();
+    }
+  }
+
+  function renderCrops() {
+    const container = document.getElementById('crop-list-container');
+    const query = document.getElementById('crop-search').value.toLowerCase().trim();
+    const t = I18N[currentLang] || I18N.en;
+
+    const filtered = CROPS_DATA.filter(c => {
+      const matchSeason = currentSeasonFilter === 'All' || c.season === currentSeasonFilter;
+      const matchQuery = !query || c.name.toLowerCase().includes(query) || c.hindi.toLowerCase().includes(query);
+      return matchSeason && matchQuery;
+    });
+
+    container.innerHTML = filtered.map(c => `
+      <div class="crop-card">
+        <div class="crop-card-header">
+          <div>
+            <div class="crop-name">${c.name}</div>
+            <div class="crop-hindi">${c.hindi}</div>
+          </div>
+          <span class="crop-badge ${c.season.toLowerCase()}">${c.season}</span>
+        </div>
+        <div class="crop-meta"><strong>📅 Sowing:</strong> ${c.sowing}</div>
+        <div class="crop-meta"><strong>🌾 Soil:</strong> ${c.soil}</div>
+        <div class="crop-meta"><strong>🧪 NPK Schedule:</strong> ${c.npk}</div>
+        <div class="crop-meta"><strong>🛡️ Common Diseases:</strong> ${c.diseases}</div>
+        <div class="crop-price-tag">💰 Mandi Price / MSP: ${c.price}</div>
+        <button class="ask-ai-crop-btn" onclick="askAiAboutCrop('${encodeURIComponent(c.prompt)}', '${c.season}')">
+          ✨ ${t.askAi} ${c.name.split('/')[0].trim()}
+        </button>
+      </div>
+    `).join('');
+  }
+
+  function setSeasonFilter(season, tab) {
+    currentSeasonFilter = season;
+    document.querySelectorAll('.season-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    renderCrops();
+  }
+
+  function filterCrops() {
+    renderCrops();
+  }
+
+  function askAiAboutCrop(encodedPrompt, season) {
+    const prompt = decodeURIComponent(encodedPrompt);
+    switchTab('chat');
+    activeContext.season = season;
+    document.querySelectorAll('.chip').forEach(chip => {
+      if (chip.textContent.includes(season)) chip.classList.add('active');
+    });
+    document.getElementById('user-input').value = prompt;
+    sendMessage();
+  }
+
+  applyTranslations();
+</script>
+
+</body>
+</html>
