@@ -152,3 +152,15 @@ npm start
 npx expo start -c
 ```
 Scan the QR code with **Expo Go** (Android) or the **Camera app** (iOS).
+
+---
+
+## 🌐 Live Web Version (24/7 Access)
+
+Access the live web version directly from any mobile or desktop browser without installing anything:
+👉 **[https://tarunganiga.github.io/agrimind.ai](https://tarunganiga.github.io/agrimind.ai)**
+
+- **100% Client-Side & Private:** No backend proxy or tracking servers.
+- **Resilient AI Architecture:** Automatically routes between active Gemini models (`gemini-3.5-flash-lite`, `gemini-flash-lite-latest`, `gemini-3.8-flash`) and seamlessly activates the built-in offline Agricultural Knowledge Engine during cloud traffic spikes.
+- **Multilingual Support:** Supports English, Kannada (ಕನ್ನಡ), Telugu (తెలుగు), Tamil (தமிழ்), Malayalam (മലയാളം), and Hindi (हिंदी).
+
