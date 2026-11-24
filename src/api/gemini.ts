@@ -11,8 +11,8 @@ import { SupportedLanguage } from '../constants/translations';
  * Supports Kannada, Telugu, Tamil, Malayalam, Hindi, and English.
  */
 
-const PRIMARY_MODEL = 'gemini-3.8-flash';
-const FALLBACK_MODEL = 'gemini-2.5-flash';
+const PRIMARY_MODEL = 'gemini-3.5-flash-lite';
+const FALLBACK_MODEL = 'gemini-flash-lite-latest';
 
 export function getGeminiApiKey(): string | undefined {
   const key = process.env.EXPO_PUBLIC_GEMINI_API_KEY;

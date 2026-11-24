@@ -164,8 +164,10 @@ const server = http.createServer((req, res) => {
           });
         };
 
-        callModel('gemini-3.8-flash')
-          .catch(() => callModel('gemini-2.5-flash'))
+        callModel('gemini-3.5-flash-lite')
+          .catch(() => callModel('gemini-flash-lite-latest'))
+          .catch(() => callModel('gemini-3.6-flash'))
+          .catch(() => callModel('gemini-3.8-flash'))
           .then(reply => {
             res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
             res.end(JSON.stringify({ reply }));

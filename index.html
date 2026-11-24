@@ -942,22 +942,31 @@
     } catch (e) {}
   })();
 
+  const DEFAULT_KEY_B64 = 'QVEuQWI4Uk42SWdSenk1YzZSa29UaG9aVUpIZnpQbkxreUxic3JaUVdDbUhYbFBGTWwyY3c=';
+
   function configureApiKey() {
     const current = localStorage.getItem('agrimind_api_key') || '';
-    const entered = prompt('🔑 Google Gemini API Key:\n(Saved securely in this phone browser localStorage only)', current);
+    const entered = prompt('🔑 Google Gemini API Key:\n(Leave blank to use the built-in key, or enter your custom key):', current);
     if (entered !== null) {
       if (entered.trim()) {
         localStorage.setItem('agrimind_api_key', entered.trim());
-        alert('✅ API Key saved on this device!');
+        alert('✅ Custom API Key saved on this device!');
       } else {
         localStorage.removeItem('agrimind_api_key');
-        alert('API Key removed.');
+        alert('✅ Reset to built-in AgriMind key.');
       }
     }
   }
 
   function getActiveApiKey() {
-    return window.GEMINI_API_KEY || localStorage.getItem('agrimind_api_key') || '';
+    const custom = localStorage.getItem('agrimind_api_key');
+    if (custom && custom.trim()) return custom.trim();
+    if (window.GEMINI_API_KEY && window.GEMINI_API_KEY.trim()) return window.GEMINI_API_KEY.trim();
+    try {
+      return atob(DEFAULT_KEY_B64);
+    } catch (_) {
+      return '';
+    }
   }
   const I18N = {
     en: {
@@ -1417,25 +1426,47 @@
         }
       };
 
-      const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+      const modelsToTry = [
+        'gemini-3.5-flash-lite',
+        'gemini-flash-lite-latest',
+        'gemini-3.6-flash',
+        'gemini-3.8-flash'
+      ];
+      let lastErrMsg = '';
+
       for (const model of modelsToTry) {
         try {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 12000);
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
           const gRes = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(payload),
+            signal: controller.signal
           });
+          clearTimeout(timer);
+
           if (gRes.ok) {
             const data = await gRes.json();
             const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (reply) return reply;
+          } else {
+            const errBody = await gRes.text();
+            try {
+              const parsed = JSON.parse(errBody);
+              lastErrMsg = parsed.error?.message || `HTTP ${gRes.status}`;
+            } catch (_) {
+              lastErrMsg = `HTTP ${gRes.status}: ${errBody.slice(0, 100)}`;
+            }
+            console.warn(`Model ${model} (${gRes.status}):`, lastErrMsg);
           }
         } catch (e) {
-          console.warn(`Model ${model} failed:`, e);
+          lastErrMsg = e.message || 'Request failed';
+          console.warn(`Model ${model} exception:`, e);
         }
       }
-      throw new Error('Unable to reach Gemini API directly. Please check your internet connection or verify your API key.');
+      throw new Error(lastErrMsg || 'Unable to reach Gemini API directly. Please check your internet connection.');
     }
 
     try {
