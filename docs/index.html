@@ -776,9 +776,9 @@
         </div>
       </div>
       <div style="display:flex; align-items:center; gap:6px;">
-        <a href="/AgriMind-AI.apk" download="AgriMind-AI.apk" style="text-decoration:none; background:linear-gradient(135deg, #2E7D32, #1B5E20); color:#FFF; font-size:11px; font-weight:700; padding:6px 10px; border-radius:20px; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.4);">
-          📲 <span>APK</span>
-        </a>
+        <button onclick="configureApiKey()" style="border:none; cursor:pointer; background:rgba(255,255,255,0.9); color:#1B5E20; font-size:11px; font-weight:700; padding:6px 9px; border-radius:20px; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(0,0,0,0.1); border:1px solid rgba(27,94,32,0.2);">
+          🔑 <span id="lbl-api-key">Key</span>
+        </button>
         <button class="new-chat-btn" onclick="startNewChat()">
           🔄 <span id="lbl-new-chat">New Chat</span>
         </button>
@@ -930,6 +930,35 @@
 </div>
 
 <script>
+  // Auto-capture ?key=... from URL into phone browser localStorage
+  (function initApiKeyFromUrl() {
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const paramKey = urlParams.get('key');
+      if (paramKey && paramKey.trim()) {
+        localStorage.setItem('agrimind_api_key', paramKey.trim());
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    } catch (e) {}
+  })();
+
+  function configureApiKey() {
+    const current = localStorage.getItem('agrimind_api_key') || '';
+    const entered = prompt('🔑 Google Gemini API Key:\n(Saved securely in this phone browser localStorage only)', current);
+    if (entered !== null) {
+      if (entered.trim()) {
+        localStorage.setItem('agrimind_api_key', entered.trim());
+        alert('✅ API Key saved on this device!');
+      } else {
+        localStorage.removeItem('agrimind_api_key');
+        alert('API Key removed.');
+      }
+    }
+  }
+
+  function getActiveApiKey() {
+    return window.GEMINI_API_KEY || localStorage.getItem('agrimind_api_key') || '';
+  }
   const I18N = {
     en: {
       title: "AgriMind AI",
@@ -1334,9 +1363,18 @@
     document.getElementById('loading-banner').classList.add('active');
     document.getElementById('send-btn').disabled = true;
 
-    const GEMINI_DIRECT_KEY = window.GEMINI_API_KEY || '';
-
     async function callGeminiDirectly(promptText, activeContext, lang) {
+      let apiKey = getActiveApiKey();
+      if (!apiKey) {
+        apiKey = prompt('🔑 Please enter your Google Gemini API Key to enable AI responses on mobile:\n(Saved only in your mobile browser localStorage)');
+        if (apiKey && apiKey.trim()) {
+          apiKey = apiKey.trim();
+          localStorage.setItem('agrimind_api_key', apiKey);
+        } else {
+          throw new Error('Gemini API Key is required for live AI responses. Tap the 🔑 Key button at the top to set it.');
+        }
+      }
+
       const langData = LANG_MAP[lang] || LANG_MAP.en;
       let finalSystemInstruction = BASE_SYSTEM_INSTRUCTION;
       if (lang !== 'en') {
@@ -1370,7 +1408,7 @@
       const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-pro'];
       for (const model of modelsToTry) {
         try {
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_DIRECT_KEY}`;
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
           const gRes = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1385,7 +1423,7 @@
           console.warn(`Model ${model} failed:`, e);
         }
       }
-      throw new Error('Unable to reach Gemini API directly. Please check your internet connection.');
+      throw new Error('Unable to reach Gemini API directly. Please check your internet connection or verify your API key.');
     }
 
     try {
