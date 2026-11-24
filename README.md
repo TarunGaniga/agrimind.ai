@@ -137,7 +137,7 @@ cp .env.example .env
 
 Open `.env` and paste your key:
 ```env
-EXPO_PUBLIC_GEMINI_API_KEY=AIzaSyYourActualGeminiKeyHere
+EXPO_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
 ```
 
 ### 3. Install Dependencies

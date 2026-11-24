@@ -775,9 +775,14 @@
           <div class="brand-sub" id="lbl-tagline">Direct Gemini • Stateless</div>
         </div>
       </div>
-      <button class="new-chat-btn" onclick="startNewChat()">
-        🔄 <span id="lbl-new-chat">New Chat</span>
-      </button>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <a href="/AgriMind-AI.apk" download="AgriMind-AI.apk" style="text-decoration:none; background:linear-gradient(135deg, #2E7D32, #1B5E20); color:#FFF; font-size:11px; font-weight:700; padding:6px 10px; border-radius:20px; display:flex; align-items:center; gap:4px; box-shadow:0 2px 6px rgba(0,0,0,0.15); border:1px solid rgba(255,255,255,0.4);">
+          📲 <span>APK</span>
+        </a>
+        <button class="new-chat-btn" onclick="startNewChat()">
+          🔄 <span id="lbl-new-chat">New Chat</span>
+        </button>
+      </div>
     </div>
 
     <!-- Multilingual Language Switcher -->
@@ -795,6 +800,18 @@
 
     <!-- SCREEN 1: AGRI CHAT -->
     <div id="screen-chat" class="screen-container active">
+      <!-- Direct APK Download Banner -->
+      <a href="/AgriMind-AI.apk" download="AgriMind-AI.apk" style="text-decoration:none; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(135deg, rgba(27,94,32,0.95), rgba(46,125,50,0.9)); color:#FFFFFF; padding:10px 14px; border-radius:12px; margin-bottom:12px; box-shadow:0 4px 14px rgba(27,94,32,0.3); border:1px solid rgba(255,255,255,0.4); backdrop-filter:blur(8px);">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="font-size:24px;">📲</div>
+          <div>
+            <div style="font-size:12.5px; font-weight:800; letter-spacing:0.2px;">Install AgriMind AI App (.APK)</div>
+            <div style="font-size:10.5px; opacity:0.92;">Standalone Android Package • 20+ Offline Crops • 100% Privacy</div>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,0.25); font-size:11px; font-weight:700; padding:6px 12px; border-radius:15px; border:1px solid rgba(255,255,255,0.6); white-space:nowrap;">Download ↓</div>
+      </a>
+
       <!-- Privacy Banner -->
       <div class="privacy-banner">
         <div class="privacy-icon">🛡️</div>
@@ -1317,41 +1334,95 @@
     document.getElementById('loading-banner').classList.add('active');
     document.getElementById('send-btn').disabled = true;
 
-    try {
-      const res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt: text,
-          context: activeContext,
-          language: currentLang
-        })
-      });
+    const GEMINI_DIRECT_KEY = window.GEMINI_API_KEY || '';
 
-      const data = await res.json();
+    async function callGeminiDirectly(promptText, activeContext, lang) {
+      const langData = LANG_MAP[lang] || LANG_MAP.en;
+      let finalSystemInstruction = BASE_SYSTEM_INSTRUCTION;
+      if (lang !== 'en') {
+        finalSystemInstruction += `\n\nCRITICAL LANGUAGE REQUIREMENT: You MUST answer the user entirely in ${langData.name} (${langData.native}) script. Use authentic rural agricultural vocabulary so it is directly understandable for farmers.`;
+      }
+
+      let fullPrompt = promptText;
+      const contextParts = [];
+      if (activeContext?.season) contextParts.push(`Season: ${activeContext.season}`);
+      if (activeContext?.soil) contextParts.push(`Soil Type: ${activeContext.soil}`);
+      if (lang !== 'en') contextParts.push(`Response Language: ${langData.name} (${langData.native})`);
+
+      if (contextParts.length > 0) {
+        fullPrompt = `[Context: ${contextParts.join(' | ')}]\n\nFarmer Query: ${promptText.trim()}`;
+      }
+
+      const payload = {
+        systemInstruction: {
+          parts: [{ text: finalSystemInstruction }]
+        },
+        contents: [
+          { role: 'user', parts: [{ text: fullPrompt }] }
+        ],
+        generationConfig: {
+          temperature: 0.3,
+          topP: 0.9,
+          maxOutputTokens: 1200
+        }
+      };
+
+      const modelsToTry = ['gemini-2.5-flash', 'gemini-2.5-pro'];
+      for (const model of modelsToTry) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_DIRECT_KEY}`;
+          const gRes = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (gRes.ok) {
+            const data = await gRes.json();
+            const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (reply) return reply;
+          }
+        } catch (e) {
+          console.warn(`Model ${model} failed:`, e);
+        }
+      }
+      throw new Error('Unable to reach Gemini API directly. Please check your internet connection.');
+    }
+
+    try {
+      let replyText = '';
+      try {
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: text,
+            context: activeContext,
+            language: currentLang
+          })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.reply) replyText = data.reply;
+        }
+      } catch (serverErr) {
+        console.log('Local server unreachable, connecting directly to Gemini AI cloud...');
+      }
+
+      if (!replyText) {
+        replyText = await callGeminiDirectly(text, activeContext, currentLang);
+      }
+
       document.getElementById('loading-banner').classList.remove('active');
       document.getElementById('send-btn').disabled = false;
 
-      let replyHtml = '';
-      if (data.error) {
-        replyHtml = `
-          <div class="chat-row ai">
-            <div class="chat-bubble" style="border-color:#C62828; background:#FFEBEE;">
-              <strong>⚠️ Gemini Connection Notice:</strong><br>${data.error}
-            </div>
+      const replyHtml = `
+        <div class="chat-row ai">
+          <div class="chat-bubble">
+            ${formatAiResponse(replyText)}
           </div>
-        `;
-      } else {
-        replyHtml = `
-          <div class="chat-row ai">
-            <div class="chat-bubble">
-              ${formatAiResponse(data.reply)}
-            </div>
-            <div class="chat-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • AgriMind AI</div>
-          </div>
-        `;
-      }
-
+          <div class="chat-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • AgriMind AI</div>
+        </div>
+      `;
       chatContainer.insertAdjacentHTML('beforeend', replyHtml);
       chatContainer.scrollTop = chatContainer.scrollHeight;
 

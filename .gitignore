@@ -38,3 +38,6 @@ android/local.properties
 Thumbs.db
 
 *.apk
+
+cloudflared.exe
+start_tunnel.js

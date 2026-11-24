@@ -58,6 +58,24 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Serve AgriMind APK download directly to mobile devices
+  if (req.url === '/AgriMind-AI.apk' || req.url === '/download-apk') {
+    const apkPath = path.join(__dirname, '..', 'AgriMind-AI.apk');
+    if (!fs.existsSync(apkPath)) {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('APK not found on server');
+      return;
+    }
+    const stat = fs.statSync(apkPath);
+    res.writeHead(200, {
+      'Content-Type': 'application/vnd.android.package-archive',
+      'Content-Length': stat.size,
+      'Content-Disposition': 'attachment; filename="AgriMind-AI.apk"'
+    });
+    fs.createReadStream(apkPath).pipe(res);
+    return;
+  }
+
   // API Chat Endpoint
   if (req.url === '/api/chat' && req.method === 'POST') {
     let body = '';
