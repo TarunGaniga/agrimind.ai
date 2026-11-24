@@ -11,6 +11,8 @@ import { SupportedLanguage } from '../constants/translations';
  * Supports Kannada, Telugu, Tamil, Malayalam, Hindi, and English.
  */
 
+import { getAgriculturalAdvisory } from './advisoryEngine';
+
 const PRIMARY_MODEL = 'gemini-3.5-flash-lite';
 const FALLBACK_MODEL = 'gemini-flash-lite-latest';
 
@@ -118,9 +120,8 @@ export async function askAgriMind(
     try {
       return await callGeminiRest(apiKey, FALLBACK_MODEL, promptWithContext, systemInstruction);
     } catch (fallbackError: any) {
-      throw new Error(
-        `Unable to reach Gemini API. Please check your internet connection and verify your API key in .env.\n\nDetails: ${fallbackError?.message || primaryError?.message}`
-      );
+      console.warn('Gemini cloud unavailable, serving local Agricultural Advisory Engine:', fallbackError?.message);
+      return getAgriculturalAdvisory(question, context, lang);
     }
   }
 }

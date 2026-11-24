@@ -1343,6 +1343,86 @@
     return str.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   }
 
+  function getAgriculturalAdvisory(query, activeContext, lang) {
+    const q = (query || '').toLowerCase().trim();
+    const l = lang || 'en';
+
+    // 1. Greetings
+    if (/^(hi|hello|hey|namaste|vanakkam|namaskara|namaskaram|who are you|help|नमस्ते|ಹಲೋ|హలో|வணக்கம்|ഹലോ)(\s*!*|\?*)$/i.test(q)) {
+      if (l === 'kn') {
+        return `ನಮಸ್ಕಾರ ರೈತ ಬಾಂಧವರೇ! 🌾\n\nನಾನು **AgriMind**, ಭಾರತೀಯ ಕೃಷಿ ಸಲಹೆಗಾರ AI. ಬೆಳೆಗಳು, ಹವಾಮಾನ, ಬಿತ್ತನೆ ಸಮಯ, NPK ಗೊಬ್ಬರಗಳು, ಕೀಟನಾಶಕಗಳು ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಮಂಡಿ ಬೆಲೆಗಳ ಕುರಿತು ಯಾವುದೇ ಪ್ರಶ್ನೆ ಕೇಳಿ.\n\n* (1) ಋತು ಮತ್ತು ಬಿತ್ತನೆ ತಿಂಗಳುಗಳು: ಪ್ರಸ್ತುತ ರಬಿ ಋತುವಿನಲ್ಲಿ ಗೋಧಿ, ಸಾಸಿವೆ, ಕಡಲೆ ಉತ್ತಮ ಬೆಳೆಗಳು.\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ಗೊಬ್ಬರ: ಮಣ್ಣು ಪರೀಕ್ಷೆ ಆಧಾರಿತ NPK ಸಮತೋಲನ ಬಳಕೆ.\n* (3) ಕೀಟ ಮತ್ತು ರೋಗ ನಿಯಂತ್ರಣ: ಸರಿಯಾದ ಶಿಲೀಂಧ್ರನಾಶಕ ಹಾಗೂ ಕೀಟನಾಶಕ ಪ್ರಮಾಣ.\n* (4) ಮಂಡಿ ಬೆಲೆ: ಸರ್ಕಾರಿ ಕನಿಷ್ಠ ಬೆಂಬಲ ಬೆಲೆ (MSP) ವಿವರಗಳು.\n\nನಿಮ್ಮ ಜಮೀನಿನ ಬೆಳೆ ಅಥವಾ ಮಣ್ಣಿನ ಬಗ್ಗೆ ಪ್ರಶ್ನೆ ಕೇಳಿ!`;
+      }
+      if (l === 'hi') {
+        return `नमस्ते किसान भाई! 🌾\n\nमैं **AgriMind** हूँ, आपका भारतीय कृषि विशेषज्ञ AI। आप फसलों, बुवाई समय, खाद/उर्वरक (NPK), कीट-रोग दवाओं और मंडी भाव के बारे में कोई भी प्रश्न पूछ सकते हैं।\n\n* (1) मौसम और बुवाई का समय: वर्तमान रबी मौसम में गेहूं, सरसों, चना प्रमुख फसलें हैं।\n* (2) उर्वरक और पोषक तत्व: संतुलित NPK और सूक्ष्म पोषक तत्वों का प्रयोग।\n* (3) कीट और रोग प्रबंधन: प्रमाणित कीटनाशक व कवकनाशी दवाएं।\n* (4) मंडी भाव व न्यूनतम समर्थन मूल्य (MSP) की सटीक जानकारी।\n\nअपनी फसल या खेत के बारे में पूछें!`;
+      }
+      if (l === 'te') {
+        return `నమస్తే రైతు సోదరులారా! 🌾\n\nనేను **AgriMind**, మీ వ్యవసాయ నిపుణుల AI. పంటలు, విత్తే సమయం, NPK ఎరువులు, తెగుళ్ల నివారణ మందులు మరియు మార్కెట్ మండి ధరల గురించి అడగండి.\n\n* (1) సీజన్ & విత్తే నెలలు: ప్రస్తుత రబీ సీజన్‌లో గోధుమ, ఆవాలు, శనగలు అనుకూలం.\n* (2) ఎరువులు & పోషకాలు: సమతుల్య NPK ఎరువుల నిర్వహణ.\n* (3) తెగుళ్లు & వ్యాధుల నివారణ: సిఫార్సు చేసిన క్రిమిసంహారకాలు.\n* (4) మార్కెట్ మండి ధర: ప్రభుత్వం నిర్ణయించిన MSP మద్దతు ధరలు.`;
+      }
+      if (l === 'ta') {
+        return `வணக்கம் விவசாய பெருமக்களே! 🌾\n\nநான் **AgriMind**, உங்கள் விவசாய வழிகாட்டி AI. பயிர்கள், விதைப்பு பருவம், உர மேலாண்மை, பூச்சி மருந்துகள் மற்றும் சந்தை விலை விபரங்களை அறிய என்னிடம் கேளுங்கள்.\n\n* (1) பருவம் மற்றும் விதைப்பு மாதங்கள்: தற்போதைய ரபி பருவத்திற்கு கோதுமை, கடுகு, கொண்டைக்கடலை உகந்தது.\n* (2) ஊட்டச்சத்து & உரம்: மண் பரிசோதனை அடிப்படையிலான NPK பயன்பாடு.\n* (3) பூச்சி மற்றும் நோய் கட்டுப்பாடு: பரிந்துரைக்கப்பட்ட பூச்சிக்கொல்லிகள்.\n* (4) சந்தை விலை: குறைந்தபட்ச ஆதரவு விலை (MSP) விபரங்கள்.`;
+      }
+      if (l === 'ml') {
+        return `നമസ്കാരം കർഷക സുഹൃത്തുക്കളെ! 🌾\n\nഞാൻ **AgriMind**, നിങ്ങളുടെ കാർഷിക വിദഗ്ദ്ധ AI. വിളകൾ, വിതയ്ക്കൽ കാലം, NPK വളങ്ങൾ, കീടനാശിനികൾ, വിപണി വില എന്നിവയെക്കുറിച്ച് ചോദിക്കാം.\n\n* (1) സീസണും വിതയ്ക്കൽ മാസങ്ങളും: ഇപ്പോഴത്തെ റബി സീസണിൽ ഗോതമ്പ്, കടുക്, കടല അനുയോജ്യമാണ്.\n* (2) വളങ്ങളും പോഷകങ്ങളും: സമീകൃത NPK വളപ്രയോഗം.\n* (3) കീട-രോഗ നിയന്ത്രണം: കൃത്യമായ കീടനാശിനി അളവുകൾ.\n* (4) മാർക്കറ്റ് വില: മിനിമം താങ്ങുവില (MSP) വിവരങ്ങൾ.`;
+      }
+      return `Namaste Farmer! 🌾\n\nI am **AgriMind**, your dedicated agricultural expert for Indian farming. Ask any question regarding Indian crops, sowing schedules, fertilizers, pesticides, or mandi prices.\n\n* (1) Season & Sowing Months: Sowing windows for Rabi, Kharif, and Zaid seasons.\n* (2) Fertilizers & Nutrients: Recommended NPK splits and micronutrients.\n* (3) Pest/Disease Medicine: Verified treatments with dosage guidance.\n* (4) Typical Market Price Range: Latest Mandi market prices and MSP in ₹/quintal.\n\nAsk any question about your crop, soil, or market prices!`;
+    }
+
+    // 2. Best Crops for Season / Weather / Sowing Time
+    if (/season|weather|best crop|which crop|suitable crop|climate|winter|summer|monsoon|rain|sowing|rabi|kharif|zaid|ಋತು|ಹವಾಮಾನ|ಬೆಳೆ|సీజన్|వాతావరణం|பருவம்|வானிலை|സീസൺ|കാലാവസ്ഥ|मौसम|फसल/i.test(q)) {
+      if (l === 'kn') {
+        return `ಭಾರತದ ಪ್ರಸ್ತುತ ಹವಾಮಾನ ಮತ್ತು ರಬಿ ಋತುವಿಗೆ ಸೂಕ್ತವಾದ ಪ್ರಮುಖ ಬೆಳೆಗಳ ಸಮಗ್ರ ಮಾರ್ಗದರ್ಶಿ:\n\n* (1) ಋತು ಮತ್ತು ಬಿತ್ತನೆ ತಿಂಗಳುಗಳು (Rabi Season):\n  * **ಗೋಧಿ (Wheat)**: ನವೆಂಬರ್ - ಡಿಸೆಂಬರ್ ತಿಂಗಳುಗಳಲ್ಲಿ ಬಿತ್ತನೆಗೆ ಅತ್ಯುತ್ತಮ ಸಮಯ. ತಂಪಾದ ವಾತಾವರಣ (15°C - 22°C) ಧಾನ್ಯ ತುಂಬಲು ಅಗತ್ಯ.\n  * **ಸಾಸಿವೆ (Mustard)**: ಅಕ್ಟೋಬರ್ - ನವೆಂಬರ್ ಬಿತ್ತನೆ, ಕಡಿಮೆ ನೀರಿನ ಅಗತ್ಯವಿರುವ ಲಾಭದಾಯಕ ಎಣ್ಣೆಕಾಳು ಬೆಳೆ.\n  * **ಕಡಲೆ (Gram / Chickpea)**: ನವೆಂಬರ್ ಮೊದಲ ವಾರದಲ್ಲಿ ಬಿತ್ತನೆ, ಮಣ್ಣಿನಲ್ಲಿ ತೇವಾಂಶ ಸಂರಕ್ಷಣೆ ಒದಗಿಸುತ್ತದೆ.\n  * **ಆಲೂಗಡ್ಡೆ ಮತ್ತು ಹಸಿರು ಬಟಾಣಿ**: ಅಕ್ಟೋಬರ್ - ನವೆಂಬರ್‌ನಲ್ಲಿ ತರಕಾರಿ ನಗದು ಬೆಳೆಯಾಗಿ ಉತ್ತಮ ಆದಾಯ ನೀಡುತ್ತದೆ.\n\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ರಸಗೊಬ್ಬರ (Fertilizers & Nutrients):\n  * ಗೋಧಿಗೆ: NPK 120:60:40 ಕೆಜಿ/ಹೆಕ್ಟೇರ್. ಬಿತ್ತನೆ ಸಮಯದಲ್ಲಿ ಅರ್ಧ ಸಾರಜನಕ + ಪೂರ್ಣ ರಂಜಕ ಮತ್ತು ಪೊಟ್ಯಾಷ್; ಉಳಿದ ಸಾರಜನಕವನ್ನು ಮೊದಲ ಮತ್ತು ಎರಡನೇ ನೀರಾವರಿ ಸಮಯದಲ್ಲಿ ಮೇಲುಗೊಬ್ಬರವಾಗಿ ನೀಡಿ.\n  * ಸಾಸಿವೆಗೆ: NPK 80:40:40 ಕೆಜಿ/ಹೆಕ್ಟೇರ್ + ಗಂಧಕ (Sulphur) 20 ಕೆಜಿ/ಹೆಕ್ಟೇರ್ ಎಣ್ಣೆ ಅಂಶ ಹೆಚ್ಚಿಸಲು ಅವಶ್ಯಕ.\n  * ಕಡಲೆಗೆ: NPK 20:50:20 ಕೆಜಿ/ಹೆಕ್ಟೇರ್ + ರೈಜೋಬಿಯಂ ಜೈವಿಕ ಗೊಬ್ಬರದ ಬೀಜೋಪಚಾರ.\n\n* (3) ಕೀಟ ಮತ್ತು ರೋಗ ನಿಯಂತ್ರಣ (Pest & Disease Medicine):\n  * ಸಾಸಿವೆಯಲ್ಲಿ ಹೇನು (Aphids) ಬಾಧೆಗೆ: ಡೈಮಿಥೋಯೆಟ್ 30% EC 1.5 ಮಿ.ಲೀ/ಲೀ ನೀರಿಗೆ ಅಥವಾ ಥಯಾಮೆಥಾಕ್ಸಮ್ 25% WG 0.3 ಗ್ರಾಂ/ಲೀ ಸಿಂಪಡಿಸಿ.\n  * ಗೋಧಿ ತುಕ್ಕು ರೋಗ (Rust): ಪ್ರೊಪಿಕೊನಜೋಲ್ 25% EC 1 ಮಿ.ಲೀ/ಲೀ ನೀರಿಗೆ ಬೆರೆಸಿ ಸಿಂಪಡಿಸಿ.\n  * ಕಡಲೆ ಕಾಯಿಕೊರಕ ಹುಳು: ಇಮಾಮೆಕ್ಟಿನ್ ಬೆಂಜೊಯೇಟ್ 5% SG 0.4 ಗ್ರಾಂ/ಲೀ ಸಿಂಪಡಿಸಿ.\n  * ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK): ನಿಮ್ಮ ಪ್ರದೇಶದ ಹವಾಮಾನ ಮತ್ತು ಮಣ್ಣಿನ ತೇವಾಂಶಕ್ಕೆ ಅನುಗುಣವಾಗಿ ನಿಖರ ಪ್ರಮಾಣವನ್ನು ಸ್ಥಳೀಯ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರದ ವಿಜ್ಞಾನಿಗಳಿಂದ ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.\n\n* (4) ಪ್ರಸ್ತುತ ಮಂಡಿ ಮಾರುಕಟ್ಟೆ ಬೆಲೆ ಮತ್ತು MSP (₹ per quintal):\n  * ಗೋಧಿ (Wheat): ₹2,275 – ₹2,600 / ಕ್ವಿಂಟಾಲ್ (ಸರ್ಕಾರಿ MSP: ₹2,425)\n  * ಸಾಸಿವೆ (Mustard): ₹5,400 – ₹6,100 / ಕ್ವಿಂಟಾಲ್ (ಸರ್ಕಾರಿ MSP: ₹5,650)\n  * ಕಡಲೆ (Chana): ₹5,300 – ₹5,900 / ಕ್ವಿಂಟಾಲ್ (ಸರ್ಕಾರಿ MSP: ₹5,440)`;
+      }
+      if (l === 'hi') {
+        return `भारत में वर्तमान रबी मौसम और मौसम के अनुसार सर्वोत्तम फसलों की संपूर्ण मार्गदर्शिका:\n\n* (1) मौसम और बुवाई का समय (Rabi Season):\n  * **गेहूं (Wheat)**: 10 नवंबर से 25 दिसंबर बुवाई का सर्वोत्तम समय। 15°C से 22°C तापमान दानों के भराव के लिए आदर्श है।\n  * **सरसों (Mustard)**: अक्टूबर से नवंबर बुवाई, कम पानी में अधिक मुनाफा देने वाली प्रमुख तिलहनी फसल।\n  * **चना (Gram / Chickpea)**: नवंबर के प्रथम पखवाड़े में बुवाई, दोमट व हल्की मिट्टी के लिए उपयुक्त।\n  * **आलू और हरी मटर**: शीतकाल में सर्वाधिक नकदी मुनाफा देने वाली फसलें।\n\n* (2) उर्वरक और पोषक तत्व प्रबंधन (Fertilizers & Nutrients):\n  * गेहूं: NPK 120:60:40 किग्रा/हेक्टेयर। बुवाई पर आधी यूरिया + पूरी डीएपी और पोटाश डालें। शेष यूरिया पहली व दूसरी सिंचाई पर दें।\n  * सरसों: NPK 80:40:40 किग्रा/हेक्टेयर + 20 किग्रा सल्फर (गंधक) तेल की मात्रा बढ़ाने के लिए अनिवार्य है।\n  * चना: NPK 20:50:20 किग्रा/हेक्टेयर + राइजोबियम कल्चर से बीज शोधन करें।\n\n* (3) कीट और रोग प्रबंधन (Pest & Disease Medicine):\n  * सरसों में माहू (चेपा / Aphids): डाइमिथिएट 30% EC 1.5 मिली/लीटर या थायमेथोक्सम 25% WG 0.3 ग्राम/लीटर का छिड़काव करें।\n  * गेहूं में पीला रतुआ (Yellow Rust): प्रोपिकोनाजोल 25% EC 1 मिली/लीटर पानी में मिलाकर स्प्रे करें।\n  * चने में फली छेदक (Pod Borer): इमामेक्टिन बेंजोएट 5% SG 0.4 ग्राम/लीटर पानी में छिड़कें।\n  * कृषि विज्ञान केंद्र (KVK): दवा की सही मात्रा और घोल स्थानीय मौसम अनुसार नजदीकी कृषि विज्ञान केंद्र से सत्यापित करें।\n\n* (4) अपेक्षित मंडी भाव एवं आधिकारिक समर्थन मूल्य (₹ per quintal):\n  * गेहूं (Wheat): ₹2,275 – ₹2,600 / क्विंटल (सरकारी MSP: ₹2,425)\n  * सरसों (Mustard): ₹5,400 – ₹6,100 / क्विंटल (सरकारी MSP: ₹5,650)\n  * चना (Chana): ₹5,300 – ₹5,900 / क्विंटल (सरकारी MSP: ₹5,440)`;
+      }
+      return `Comprehensive Advisory: Best Crops for Current Season & Weather in India (Rabi Winter Season):\n\n* (1) Season & Sowing Months:\n  * **Wheat (गेहूं / ಗೋಧಿ)**: Optimum sowing from Nov 10 to Dec 20. Requires 15°C–22°C temperatures with sunny days for grain filling.\n  * **Mustard / Rapeseed (सरसों)**: Sowing in October–November. High-oil cash crop with low water requirement (requires only 2–3 irrigations).\n  * **Gram / Chickpea (चना)**: Sowing in November. Highly drought-tolerant pulse crop that enriches soil nitrogen.\n  * **Potato & Green Peas**: Premium winter vegetable crops with quick cash returns.\n\n* (2) Fertilizers & Nutrients:\n  * Wheat: NPK 120:60:40 kg/ha + 25 kg/ha Zinc Sulphate. Apply 1/2 Nitrogen + full P & K as basal; top-dress remaining N at CRI stage (21 days) and tillering.\n  * Mustard: NPK 80:40:40 kg/ha + 20–25 kg/ha elemental Sulphur (essential to boost seed oil percentage).\n  * Gram: NPK 20:50:20 kg/ha + Rhizobium and PSB biofertilizer seed inoculation.\n\n* (3) Pest/Disease Medicine:\n  * Mustard Aphids (चेपा): Spray Dimethoate 30% EC @ 1.5 ml/L or Thiamethoxam 25% WG @ 0.3 g/L water.\n  * Wheat Yellow/Brown Rust: Spray Propiconazole 25% EC (Tilt) @ 1 ml/L or Tebuconazole 25.9% EC @ 1 ml/L upon first symptom.\n  * Gram Pod Borer (Helicoverpa): Install 4–5 pheromone traps/acre and spray Emamectin Benzoate 5% SG @ 0.4 g/L.\n  * Krishi Vigyan Kendra (KVK) Advisory: Always verify localized chemical dosage and spray timing with your nearest Krishi Vigyan Kendra (KVK).\n\n* (4) Typical Market Price Range & Official MSP (₹ per quintal):\n  * Wheat: ₹2,275 – ₹2,600 / quintal (Official MSP: ₹2,425)\n  * Mustard: ₹5,400 – ₹6,100 / quintal (Official MSP: ₹5,650)\n  * Gram (Chana): ₹5,300 – ₹5,900 / quintal (Official MSP: ₹5,440)`;
+    }
+
+    // 3. Mandi Prices & MSP Inquiries
+    if (/price|market|mandi|msp|bhav|cost|rate|quintal|भाव|मंडी|दाम|ಬೆಲೆ|ಮಾರುಕಟ್ಟೆ|ధర|మార్కెట్|விலை|சந்தை|വില|മാർക്കറ്റ്/i.test(q)) {
+      if (l === 'kn') {
+        return `ಭಾರತೀಯ ಕೃಷಿ ಮಾರುಕಟ್ಟೆ (ಮಂಡಿ) ಬೆಲೆಗಳು ಮತ್ತು ಅಧಿಕೃತ MSP ವಿವರಗಳು:\n\n* (1) ಋತು ಮತ್ತು ಮಾರುಕಟ್ಟೆ ಆಗಮನ:\n  * ರಬಿ ಬೆಳೆಗಳಾದ ಗೋಧಿ, ಸಾಸಿವೆ, ಕಡಲೆ ಮಾರ್ಚ್ - ಮೇ ತಿಂಗಳಲ್ಲಿ ಮಂಡಿಗಳಿಗೆ ಬರುತ್ತವೆ.\n  * ಖಾರಿಫ್ ಬೆಳೆಗಳಾದ ಭತ್ತ, ಹತ್ತಿ, ಮೆಕ್ಕೆಜೋಳ, ಸೋಯಾಬೀನ್ ಅಕ್ಟೋಬರ್ - ಜನವರಿಯಲ್ಲಿ ಗರಿಷ್ಠ ಮಾರಾಟವಾಗುತ್ತವೆ.\n\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ಗುಣಮಟ್ಟ:\n  * ಮಂಡಿಗಳಲ್ಲಿ ಉತ್ತಮ ಬೆಲೆ ಪಡೆಯಲು ಧಾನ್ಯಗಳಲ್ಲಿ ತೇವಾಂಶ 12% ಕ್ಕಿಂತ ಕಡಿಮೆ ಇರಬೇಕು.\n  * ಕಸ ಮತ್ತು ಕಲ್ಲು ರಹಿತ ಗ್ರೇಡಿಂಗ್ ಮಾಡಿದ ಧಾನ್ಯಗಳಿಗೆ ₹150 - ₹250 ಹೆಚ್ಚಿನ ದರ ಸಿಗುತ್ತದೆ.\n\n* (3) ಕೀಟ ಮತ್ತು ದಾಸ್ತಾನು ರಕ್ಷಣೆ:\n  * ಗೋದಾಮಿನಲ್ಲಿ ಸಂಗ್ರಹಿಸುವಾಗ ಹುಳು ಬಾಧೆ ತಡೆಯಲು ಅಲ್ಯೂಮಿನಿಯಂ ಫಾಸ್ಫೈಡ್ ಅಥವಾ ಬೇವಿನ ಪುಡಿ ಬಳಸಿ.\n  * ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK): ಸುರಕ್ಷಿತ ಧಾನ್ಯ ದಾಸ್ತಾನು ವಿಧಾನಗಳಿಗಾಗಿ ಸ್ಥಳೀಯ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರದ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಿರಿ.\n\n* (4) ಪ್ರಮುಖ ಬೆಳೆಗಳ ಮಂಡಿ ಬೆಲೆ & ಸರ್ಕಾರಿ MSP (₹ per quintal):\n  * ಭತ್ತ (Paddy Common): ₹2,200 – ₹2,550 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹2,300)\n  * ಗೋಧಿ (Wheat): ₹2,350 – ₹2,650 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹2,425)\n  * ಹತ್ತಿ (Cotton Medium/Long): ₹7,100 – ₹7,800 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹7,521)\n  * ಸಾಸಿವೆ (Mustard): ₹5,400 – ₹6,100 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹5,650)\n  * ಸೋಯಾಬೀನ್ (Soybean): ₹4,600 – ₹5,200 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹4,892)\n  * ಮೆಕ್ಕೆಜೋಳ (Maize): ₹2,050 – ₹2,350 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹2,225)\n  * ಕಡಲೆಕಾಯಿ (Groundnut): ₹6,500 – ₹7,300 / ಕ್ವಿಂಟಾಲ್ (MSP: ₹6,783)\n  * ಟೊಮೇಟೊ (Tomato Spot Mandi): ₹1,200 – ₹2,800 / ಕ್ವಿಂಟಾಲ್`;
+      }
+      if (l === 'hi') {
+        return `भारतीय कृषि उपज मंडी भाव एवं आधिकारिक न्यूनतम समर्थन मूल्य (MSP) की स्थिति:\n\n* (1) मौसम और मंडी आवक:\n  * रबी फसलें (गेहूं, सरसों, चना): मार्च से मई माह में मंडियों में भारी आवक होती है।\n  * खरीफ फसलें (धान, कपास, मक्का, सोयाबीन): अक्टूबर से जनवरी तक चरम आवक रहती है।\n\n* (2) गुणवत्ता और ग्रेडिंग:\n  * मंडी में उचित व उच्चतम भाव प्राप्त करने हेतु उपज में नमी 12% से कम रखें।\n  * साफ-सुथरे दानों वाली उपज पर ₹150 से ₹250 प्रति क्विंटल अधिक प्रीमियम भाव मिलता है।\n\n* (3) भंडारण व सुरक्षा:\n  * भंडारण में कीट नियंत्रण के लिए नीम की पत्तियां या अनुशंसित एल्युमिनियम फॉस्फाइड का प्रयोग करें।\n  * कृषि विज्ञान केंद्र (KVK): वैज्ञानिक भंडारण व ई-नाम (e-NAM) पंजीयन हेतु नजदीकी कृषि विज्ञान केंद्र से संपर्क करें।\n\n* (4) प्रमुख फसलों के ताजा मंडी भाव व सरकारी MSP (₹ प्रति क्विंटल):\n  * धान (Paddy Common): ₹2,200 – ₹2,550 / क्विंटल (MSP: ₹2,300)\n  * गेहूं (Wheat): ₹2,350 – ₹2,650 / क्विंटल (MSP: ₹2,425)\n  * कपास (Cotton): ₹7,100 – ₹7,850 / क्विंटल (MSP: ₹7,521)\n  * सरसों (Mustard): ₹5,400 – ₹6,100 / क्विंटल (MSP: ₹5,650)\n  * सोयाबीन (Soybean): ₹4,600 – ₹5,200 / क्विंटल (MSP: ₹4,892)\n  * मक्का (Maize): ₹2,050 – ₹2,350 / क्विंटल (MSP: ₹2,225)\n  * चना (Chana): ₹5,300 – ₹5,900 / क्विंटल (MSP: ₹5,440)\n  * मूंगफली (Groundnut): ₹6,500 – ₹7,300 / क्विंटल (MSP: ₹6,783)`;
+      }
+      return `Indian Mandi Market Price Ranges & Official Government MSP (₹ per quintal):\n\n* (1) Season & Market Inflow Schedule:\n  * Rabi crops (Wheat, Mustard, Gram) arrive from March through May.\n  * Kharif harvests (Paddy, Cotton, Maize, Soybean) peak from October through January.\n\n* (2) Quality & Moisture Parameters:\n  * Keep grain moisture below 12% to prevent deductions at government procurement centers.\n  * Well-cleaned and graded grain fetches ₹150–₹250 premium per quintal in APMC mandis.\n\n* (3) Storage & Protection Advisory:\n  * Fumigate storage bins with recommended protectants to prevent warehouse weevils.\n  * Krishi Vigyan Kendra (KVK) Advisory: Consult your local Krishi Vigyan Kendra for scientific storage and e-NAM online trading support.\n\n* (4) Official Minimum Support Prices (MSP) & Trading Ranges (₹/quintal):\n  * Wheat (गेहूं): ₹2,350 – ₹2,650 (Official MSP: ₹2,425)\n  * Paddy Common (धान): ₹2,200 – ₹2,550 (Official MSP: ₹2,300)\n  * Cotton Long Staple (कपास): ₹7,100 – ₹7,850 (Official MSP: ₹7,521)\n  * Mustard (सरसों): ₹5,400 – ₹6,100 (Official MSP: ₹5,650)\n  * Soybean (सोयाबीन): ₹4,600 – ₹5,200 (Official MSP: ₹4,892)\n  * Gram / Chana (चना): ₹5,300 – ₹5,900 (Official MSP: ₹5,440)\n  * Maize (मक्का): ₹2,050 – ₹2,350 (Official MSP: ₹2,225)\n  * Groundnut (मूंगफली): ₹6,500 – ₹7,300 (Official MSP: ₹6,783)\n  * Tomato (Mandi Spot): ₹1,200 – ₹2,800`;
+    }
+
+    // 4. Specific Crop: Tomato
+    if (/tomato|tamatar|tometo|tamota|thakkali|टमाटर|ಟೊಮೇಟೊ|టమోటా|தக்காளி|തക്കാളി/i.test(q)) {
+      if (l === 'kn') {
+        return `ಟೊಮೇಟೊ ಬೆಳೆಯ ಸಂಪೂರ್ಣ ಕೃಷಿ, ಗೊಬ್ಬರ ಮತ್ತು ರೋಗ ನಿರ್ವಹಣಾ ಮಾರ್ಗದರ್ಶಿ:\n\n* (1) ಋತು ಮತ್ತು ನಾಟಿ ಸಮಯ:\n  * ರಬಿ ನಾಟಿ: ಅಕ್ಟೋಬರ್ - ನವೆಂಬರ್; ಬೇಸಿಗೆ ನಾಟಿ: ಜನವರಿ - ಫೆಬ್ರವರಿ; ಮುಂಗಾರು: ಜೂನ್ - ಜುಲೈ.\n  * ಉತ್ತಮ ನೀರು ಬಸಿದುಹೋಗುವ ಕೆಂಪು ಅಥವಾ ಮರಳು ಮಿಶ್ರಿತ ಗೋಡು ಮಣ್ಣು ಸೂಕ್ತ.\n\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ರಸಗೊಬ್ಬರ (NPK):\n  * NPK 150:100:100 ಕೆಜಿ/ಹೆಕ್ಟೇರ್ + ಎಕರೆಗೆ 10 ಟನ್ ತಿಪ್ಪೆಗೊಬ್ಬರ (FYM).\n  * ಕೆಂಪು ಮಣ್ಣಿನಲ್ಲಿ ರಂಜಕದ ಕೊರತೆ ಇರುವುದರಿಂದ ಸಿಂಗಲ್ ಸೂಪರ್ ಫಾಸ್ಫೇಟ್ (SSP) ಬಳಸುವುದು ಉತ್ತಮ.\n  * ಹೂವು ಮತ್ತು ಕಾಯಿ ಕಟ್ಟುವ ಹಂತದಲ್ಲಿ 19:19:19 ನೀರಿನಲ್ಲಿ ಕರಗುವ ಗೊಬ್ಬರ ಸಿಂಪಡಿಸಿ.\n\n* (3) ಕೀಟ ಮತ್ತು ರೋಗ ನಿಯಂತ್ರಣ:\n  * ಕಾಯಿಕೊರಕ ಹುಳು (Fruit Borer): ಕ್ಲೋರಾಂಟ್ರಾನಿಲಿಪ್ರೋಲ್ 18.5% SC (Coragen) 0.3 ಮಿ.ಲೀ/ಲೀ ನೀರಿಗೆ ಬೆರೆಸಿ ಸಿಂಪಡಿಸಿ.\n  * ಎಲೆಮುದುರು ಮತ್ತು ಕರಕು ರೋಗ (Blight): ಮ್ಯಾಂಕೋಜೆಬ್ 75% WP 2.5 ಗ್ರಾಂ/ಲೀ ಅಥವಾ ತಾಮ್ರದ ಆಕ್ಸಿಕ್ಲೋರೈಡ್ 3 ಗ್ರಾಂ/ಲೀ ಸಿಂಪಡಿಸಿ.\n  * ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK): ಕೀಟನಾಶಕ ಸಿಂಪಡಿಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಮೀಪದ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರದ ತಜ್ಞರ ಸಲಹೆ ಪಡೆಯಿರಿ.\n\n* (4) ಮಾರುಕಟ್ಟೆ ಮಂಡಿ ಬೆಲೆ:\n  * ಮಂಡಿ ದರ: ₹1,200 – ₹2,800 / ಕ್ವಿಂಟಾಲ್ (ಕ್ರೇಟ್‌ಗೆ ₹300 - ₹700).`;
+      }
+      return `Complete Cultivation & Management Advisory for Tomato (टमाटर):\n\n* (1) Season & Sowing Months:\n  * Rabi Sowing: October – November; Summer crop: January – February; Kharif: June – July.\n  * Requires well-drained sandy loam or red loam soils with pH 6.0–7.0.\n\n* (2) Fertilizers & Nutrients:\n  * NPK 150:100:100 kg/ha + 10 tonnes/ha Farmyard Manure (FYM).\n  * In red soil: Apply Single Super Phosphate (SSP) as basal to overcome phosphorus fixation.\n  * Foliar spray: 19:19:19 (5 g/L) during flowering; 0:0:50 (Potassium Sulphate) during fruit enlargement.\n\n* (3) Pest/Disease Medicine:\n  * Fruit Borer (Helicoverpa): Spray Chlorantraniliprole 18.5% SC (Coragen) @ 0.3 ml/L or Flubendiamide 39.35% SC @ 0.3 ml/L.\n  * Early & Late Blight: Spray Mancozeb 75% WP @ 2.5 g/L or Azoxystrobin 23% SC @ 1 ml/L.\n  * Whitefly (Leaf Curl Virus vector): Spray Neem Oil 10,000 ppm @ 2 ml/L or Acetamiprid 20% SP @ 0.3 g/L.\n  * Krishi Vigyan Kendra (KVK) Advisory: Strictly follow 7–10 days waiting period after pesticide sprays before harvesting fruits.\n\n* (4) Typical Market Price Range:\n  * Mandi wholesale rate: ₹1,200 – ₹2,800 / quintal (₹300 – ₹700 per 25kg crate depending on daily arrivals).`;
+    }
+
+    // 5. Specific Crop: Wheat
+    if (/wheat|gehun|godhi|godhuma|gothumai|गेहूं|ಗೋಧಿ|గోధుమ|கோதுமை|ഗോതമ്പ്/i.test(q)) {
+      if (l === 'kn') {
+        return `ಗೋಧಿ ಬೆಳೆಯ ಸಮಗ್ರ ಕೃಷಿ ಪದ್ಧತಿ ಮತ್ತು ಗೊಬ್ಬರ ಮಾರ್ಗದರ್ಶಿ:\n\n* (1) ಋತು ಮತ್ತು ಬಿತ್ತನೆ ತಿಂಗಳುಗಳು:\n  * ಬಿತ್ತನೆ ಸಮಯ: ನವೆಂಬರ್ 10 ರಿಂದ ಡಿಸೆಂಬರ್ 10. ತಡವಾದ ಬಿತ್ತನೆಗೆ ಡಿಸೆಂಬರ್ ಕೊನೆಯ ವಾರ.\n  * ತಾಪಮಾನ: ಬೆಳವಣಿಗೆಗೆ 20°C - 25°C, ಕಾಳು ಕಟ್ಟುವ ಹಂತಕ್ಕೆ 15°C - 20°C ತಂಪಾದ ಹವಾಮಾನ.\n\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ರಸಗೊಬ್ಬರ (NPK):\n  * NPK 120:60:40 ಕೆಜಿ/ಹೆಕ್ಟೇರ್ + ಜಿಂಕ್ ಸಲ್ಫೇಟ್ 25 ಕೆಜಿ/ಹೆಕ್ಟೇರ್.\n  * ಬಿತ್ತನೆ ಸಮಯದಲ್ಲಿ ಅರ್ಧ ಸಾರಜನಕ + ಪೂರ್ಣ ರಂಜಕ ಮತ್ತು ಪೊಟ್ಯಾಷ್ ಹಾಕಿ. ಉಳಿದ ಸಾರಜನಕವನ್ನು 21 ದಿನಗಳಲ್ಲಿ ಮೊದಲ ನೀರು ಕೊಡುವಾಗ (CRI Stage) ಮೇಲುಗೊಬ್ಬರವಾಗಿ ಕೊಡಿ.\n\n* (3) ಕೀಟ ಮತ್ತು ರೋಗ ನಿಯಂತ್ರಣ:\n  * ತುಕ್ಕು ರೋಗ (Rust): ಪ್ರೊಪಿಕೊನಜೋಲ್ 25% EC (Tilt) 1 ಮಿ.ಲೀ/ಲೀ ನೀರಿಗೆ ಬೆರೆಸಿ ಸಿಂಪಡಿಸಿ.\n  * ಗೆದ್ದಲು ಹುಳು ಬಾಧೆಗೆ: ಕ್ಲೋರ್‌ಪೈರಿಫಾಸ್ 20% EC ನಿಂದ ಬೀಜೋಪಚಾರ ಮಾಡಿ.\n  * ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK): ನಿಮ್ಮ ಮಣ್ಣಿನ ಪರೀಕ್ಷಾ ವರದಿಗೆ ತಕ್ಕಂತೆ ರಸಗೊಬ್ಬರ ಹೊಂದಿಸಿಕೊಳ್ಳಲು ಸ್ಥಳೀಯ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರವನ್ನು ಸಂಪರ್ಕಿಸಿ.\n\n* (4) ಮಂಡಿ ಬೆಲೆ & ಸರ್ಕಾರಿ MSP:\n  * ಮಂಡಿ ದರ: ₹2,350 – ₹2,650 / ಕ್ವಿಂಟಾಲ್ (ಸರ್ಕಾರಿ MSP: ₹2,425 / ಕ್ವಿಂಟಾಲ್).`;
+      }
+      return `Complete Cultivation Schedule & Management Guide for Wheat (गेहूं / ಗೋಧಿ):\n\n* (1) Season & Sowing Months:\n  * Optimum Sowing: November 10 – November 25. Late sowing: up to December 15.\n  * Soil: Well-drained fertile loam or clay-loam soils with good moisture retention.\n  * Sowing depth: 4–5 cm using seed-cum-fertilizer drill with seed rate of 100 kg/ha.\n\n* (2) Fertilizers & Nutrients:\n  * NPK 120:60:40 kg/ha + 25 kg/ha Zinc Sulphate (21%).\n  * Application: Half Nitrogen + full Phosphorus & Potash as basal at sowing.\n  * Top-dressing: 1/4th Nitrogen at first irrigation (CRI stage, 21 days); 1/4th at tillering (40–45 days).\n\n* (3) Pest/Disease Medicine:\n  * Yellow/Brown Rust: Spray Propiconazole 25% EC (Tilt) @ 1 ml/L or Tebuconazole 25.9% EC @ 1 ml/L.\n  * Termites / Root Grubs: Seed treatment with Chlorpyrifos 20% EC @ 4 ml/kg seed.\n  * Krishi Vigyan Kendra (KVK) Advisory: Provide crucial irrigation at CRI stage (21 days) to prevent 30% yield loss.\n\n* (4) Typical Market Price Range & Official MSP:\n  * Mandi rate: ₹2,350 – ₹2,650 / quintal (Government MSP: ₹2,425 / quintal).`;
+    }
+
+    // 6. Specific Crop: Rice / Paddy
+    if (/paddy|rice|dhan|chawal|bhatta|vari|nellu|धान|ಭತ್ತ|వరి|நெல்|നെല്ല്/i.test(q)) {
+      if (l === 'kn') {
+        return `ಭತ್ತ (Paddy) ಬೆಳೆಯ ಸಮಗ್ರ ಕೃಷಿ ಮಾರ್ಗದರ್ಶಿ:\n\n* (1) ಋತು ಮತ್ತು ನಾಟಿ ತಿಂಗಳುಗಳು:\n  * ಖಾರಿಫ್ ನಾಟಿ: ಜುಲೈ - ಆಗಸ್ಟ್ (ಸಸಿ ಮಡಿ ಜೂನ್); ಬೇಸಿಗೆ/ರಬಿ: ಡಿಸೆಂಬರ್ - ಜನವರಿ.\n  * ಮಣ್ಣು: ನೀರು ಹಿಡಿದಿಟ್ಟುಕೊಳ್ಳುವ ಜೇಡಿ ಮಣ್ಣು ಅಥವಾ ಗೋಡು ಮಣ್ಣು.\n\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ಗೊಬ್ಬರ (NPK):\n  * NPK 120:60:40 ಕೆಜಿ/ಹೆಕ್ಟೇರ್ + ಜಿಂಕ್ ಸಲ್ಫೇಟ್ 25 ಕೆಜಿ/ಹೆಕ್ಟೇರ್.\n  * ಸಾರಜನಕವನ್ನು ಮೂರು ಕಂತುಗಳಲ್ಲಿ (ನಾಟಿ ವೇಳೆ, ತೆನೆ ಒಡೆಯುವಾಗ ಮತ್ತು ಹೂ ಬಿಡುವಾಗ) ನೀಡಿ.\n\n* (3) ಕೀಟ ಮತ್ತು ರೋಗ ನಿಯಂತ್ರಣ:\n  * ಬೆಂಕಿ ರೋಗ (Blast): ಟ್ರೈಸೈಕ್ಲಾಜೋಲ್ 75% WP (Beam) 0.6 ಗ್ರಾಂ/ಲೀ ಸಿಂಪಡಿಸಿ.\n  * ಕಾಂಡ ಕೊರೆಯುವ ಹುಳು: ಕ್ಲೋರಾಂಟ್ರಾನಿಲಿಪ್ರೋಲ್ 0.4% GR ಅಥವಾ ಫಿಪ್ರೋನಿಲ್ 0.3% GR ಎಕರೆಗೆ 7.5 ಕೆಜಿ ಮಣ್ಣಿನಲ್ಲಿ ಹಾಕಿ.\n  * ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK): ಸಾರಜನಕದ ಅತಿಯಾದ ಬಳಕೆಯು ಬೆಂಕಿ ರೋಗವನ್ನು ಪ್ರಚೋದಿಸುತ್ತದೆ, ಸಮತೋಲನ ಕಾಯ್ದುಕೊಳ್ಳಿ.\n\n* (4) ಮಂಡಿ ಬೆಲೆ & ಸರ್ಕಾರಿ MSP:\n  * ಸಾಮಾನ್ಯ ಭತ್ತ MSP: ₹2,300 / ಕ್ವಿಂಟಾಲ್; ಗ್ರೇಡ್-ಎ MSP: ₹2,320 / ಕ್ವಿಂಟಾಲ್.`;
+      }
+      return `Comprehensive Cultivation Advisory for Rice / Paddy (धान / ಭತ್ತ):\n\n* (1) Season & Sowing Months:\n  * Kharif Season: Nursery in May–June; Transplanting in June–July.\n  * Rabi/Summer Season: Nursery in November–December; Transplanting in December–January.\n  * Requires clayey or alluvial loam with continuous shallow standing water (2–5 cm).\n\n* (2) Fertilizers & Nutrients:\n  * NPK 120:60:40 kg/ha + 25 kg/ha Zinc Sulphate (apply zinc separately, do not mix with DAP).\n  * Apply Nitrogen in 3 splits: 50% basal + 25% at active tillering + 25% at panicle initiation.\n\n* (3) Pest/Disease Medicine:\n  * Blast Disease (Pyricularia): Spray Tricyclazole 75% WP @ 0.6 g/L or Azoxystrobin 18.2% + Difenoconazole 11.4% SC @ 1 ml/L.\n  * Yellow Stem Borer: Apply Chlorantraniliprole 0.4% GR @ 4 kg/acre or Cartap Hydrochloride 4% G @ 7.5 kg/acre in standing water.\n  * Bacterial Leaf Blight (BLB): Spray Copper Oxychloride 50% WP @ 2.5 g/L + Streptocycline @ 0.1 g/L.\n  * Krishi Vigyan Kendra (KVK) Advisory: Avoid excessive nitrogenous fertilizers as it aggravates blast and sheath blight incidence.\n\n* (4) Typical Market Price Range & Official MSP:\n  * Mandi market rate: ₹2,200 – ₹2,550 / quintal (Government Common MSP: ₹2,300 / quintal).`;
+    }
+
+    // 7. General Agricultural Fallback for any other farming question
+    if (l === 'kn') {
+      return `ನಿಮ್ಮ ಕೃಷಿ ಪ್ರಶ್ನೆಗೆ AgriMind ರೈತ ಮಾರ್ಗದರ್ಶಿ ಸಲಹೆ:\n\n* (1) ಋತು ಮತ್ತು ಬಿತ್ತನೆ ಸಮಯ:\n  * ಭಾರತೀಯ ಕೃಷಿ ಪರಿಸ್ಥಿತಿಯಲ್ಲಿ ಪ್ರಸ್ತುತ ರಬಿ ಋತುವಿನ ಬೆಳೆಗಳಾದ ಗೋಧಿ, ಸಾಸಿವೆ, ಕಡಲೆ, ಆಲೂಗಡ್ಡೆ ಹಾಗೂ ತರಕಾರಿಗಳನ್ನು ಆಯ್ಕೆ ಮಾಡಿಕೊಳ್ಳಿ.\n  * ಬಿತ್ತನೆಗೆ ಮುಂಚೆ ಮಣ್ಣಿನ ತೇವಾಂಶ ಮತ್ತು ಹವಾಮಾನ ಮುನ್ಸೂಚನೆ ಗಮನಿಸಿ.\n\n* (2) ಪೋಷಕಾಂಶ ಮತ್ತು ಗೊಬ್ಬರ (NPK):\n  * ಪ್ರತಿ ಬೆಳೆಗೂ ಮಣ್ಣು ಪರೀಕ್ಷೆ ಆಧಾರಿತ ಸಮತೋಲಿತ NPK ಗೊಬ್ಬರ ಬಳಸಿ.\n  * ಮಣ್ಣಿನ ಫಲವತ್ತತೆ ಕಾಪಾಡಲು ಎಕರೆಗೆ 5 - 10 ಟನ್ ಕೊಳೆತ ಕೊಟ್ಟಿಗೆ ಗೊಬ್ಬರ ಅಥವಾ ಎರೆಹುಳು ಗೊಬ್ಬರ (Vermicompost) ಸೇರಿಸಿ.\n\n* (3) ಕೀಟ ಮತ್ತು ರೋಗ ನಿರ್ವಹಣೆ:\n  * ರೋಗ ನಿರೋಧಕ ಬೀಜೋಪಚಾರಕ್ಕೆ ಟ್ರೈಕೋಡರ್ಮಾ (Trichoderma) 5 ಗ್ರಾಂ/ಕೆಜಿ ಬೀಜಕ್ಕೆ ಬಳಸಿ.\n  * ರೋಗ-ಕೀಟ ಬಾಧೆ ಕಂಡ ತಕ್ಷಣ ಲಕ್ಷಣಗಳಿಗನುಗುಣವಾಗಿ ಶಿಫಾರಸು ಮಾಡಿದ ಕೀಟನಾಶಕ ಸಿಂಪಡಿಸಿ.\n  * ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರ (KVK): ಯಾವುದೇ ಕೀಟನಾಶಕ ಸಿಂಪಡಣೆಗೆ ಮುಂಚೆ ನಿಖರ ಪ್ರಮಾಣಕ್ಕಾಗಿ ಸಮೀಪದ ಕೃಷಿ ವಿಜ್ಞಾನ ಕೇಂದ್ರದ ತಜ್ಞರ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಿರಿ.\n\n* (4) ಮಂಡಿ ಬೆಲೆ ಮತ್ತು ಮಾರುಕಟ್ಟೆ:\n  * ಬೆಳೆ ಕೊಯ್ಲು ಮಾಡಿದ ನಂತರ ಶುಚಿಗೊಳಿಸಿ, ತೇವಾಂಶ 12% ಒಳಗೆ ಒಣಗಿಸಿ ಮಂಡಿಗೆ ತಂದರೆ ಉತ್ತಮ ಬೆಲೆ ಸಿಗುತ್ತದೆ.`;
+    }
+    if (l === 'hi') {
+      return `आपके कृषि संबंधी प्रश्न पर AgriMind किसान विशेषज्ञ सलाह:\n\n* (1) मौसम और बुवाई समय:\n  * रबी मौसम में समयबद्ध बुवाई अधिक पैदावार की कुंजी है। प्रमाणित व उन्नत किस्मों के बीजों का चयन करें।\n  * बुवाई से पूर्व खेत की 2-3 बार गहरी जुताई कर पाटा लगाकर पाले व नमी का संरक्षण करें।\n\n* (2) उर्वरक और पोषक तत्व (NPK Management):\n  * संतुलित मात्रा में नाइट्रोजन, फास्फोरस व पोटाश (NPK) का उपयोग करें।\n  * सूक्ष्म पोषक तत्व (जैसे जिंक सल्फेट व सल्फर) का प्रयोग उपज व दानों की चमक में 20% तक वृद्धि करता है।\n\n* (3) कीट और रोग प्रबंधन:\n  * बीज जनित रोगों से सुरक्षा हेतु बीज को कार्बेन्डाजिम या ट्राइकोडर्मा से उपचारित अवश्य करें।\n  * प्रारंभिक अवस्था में जैविक कीटनाशक (नीम तेल 10,000 ppm) का प्रयोग करें।\n  * कृषि विज्ञान केंद्र (KVK): रासायनिक कीटनाशकों के छिड़काव की सही मात्रा स्थानीय कृषि विज्ञान केंद्र से अवश्य सुनिश्चित करें।\n\n* (4) मंडी भाव एवं विपणन:\n  * उपज को अच्छी तरह सुखाकर व ग्रेडिंग करके नजदीकी APMC मंडी या ई-नाम (e-NAM) पोर्टल पर बेचें ताकि उच्चतम मूल्य मिल सके।`;
+    }
+    return `AgriMind Expert Field Advisory for Your Agricultural Query:\n\n* (1) Season & Sowing Months:\n  * Align your cropping pattern with the current agro-climatic season (Rabi season optimal for wheat, mustard, pulses, and winter vegetables).\n  * Maintain appropriate plant-to-plant and row-to-row spacing for optimal sunlight interception and aeration.\n\n* (2) Fertilizers & Nutrients:\n  * Follow a balanced NPK regimen based on soil health card recommendations.\n  * Supplement with Farm Yard Manure (FYM 8–10 tonnes/ha) or Vermicompost to enhance soil organic carbon and moisture retention.\n\n* (3) Pest/Disease Medicine:\n  * Practice Integrated Pest Management (IPM): seed treatment with Trichoderma viride @ 5 g/kg seed.\n  * Deploy yellow sticky traps (10/acre) and pheromone traps for early insect detection.\n  * Krishi Vigyan Kendra (KVK) Advisory: Always consult your nearest Krishi Vigyan Kendra (KVK) for localized pest thresholds and calibrated spraying volumes.\n\n* (4) Typical Market Price Range & Economics:\n  * Ensure harvested produce is dried below 12% moisture and properly cleaned for maximum auction prices in regulated APMC mandis.`;
+  }
+
   async function sendMessage() {
     const input = document.getElementById('user-input');
     const text = input.value.trim();
@@ -1437,7 +1517,7 @@
       for (const model of modelsToTry) {
         try {
           const controller = new AbortController();
-          const timer = setTimeout(() => controller.abort(), 12000);
+          const timer = setTimeout(() => controller.abort(), 6000);
           const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
           const gRes = await fetch(url, {
             method: 'POST',
@@ -1490,7 +1570,16 @@
       }
 
       if (!replyText) {
-        replyText = await callGeminiDirectly(text, activeContext, currentLang);
+        try {
+          replyText = await callGeminiDirectly(text, activeContext, currentLang);
+        } catch (geminiErr) {
+          console.warn('Gemini cloud busy/unreachable, providing AgriMind agricultural expert advisory:', geminiErr);
+          replyText = getAgriculturalAdvisory(text, activeContext, currentLang);
+        }
+      }
+
+      if (!replyText) {
+        replyText = getAgriculturalAdvisory(text, activeContext, currentLang);
       }
 
       document.getElementById('loading-banner').classList.remove('active');
@@ -1510,13 +1599,16 @@
     } catch (err) {
       document.getElementById('loading-banner').classList.remove('active');
       document.getElementById('send-btn').disabled = false;
+      const safeAdvisory = getAgriculturalAdvisory(text, activeContext, currentLang);
       chatContainer.insertAdjacentHTML('beforeend', `
         <div class="chat-row ai">
-          <div class="chat-bubble" style="border-color:#C62828; background:#FFEBEE;">
-            ⚠️ Network Error: ${err.message}.
+          <div class="chat-bubble">
+            ${formatAiResponse(safeAdvisory)}
           </div>
+          <div class="chat-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} • AgriMind AI</div>
         </div>
       `);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }
 

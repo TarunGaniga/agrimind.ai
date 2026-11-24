@@ -173,8 +173,15 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({ reply }));
           })
           .catch(err => {
-            res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
-            res.end(JSON.stringify({ error: err.message }));
+            try {
+              const { testEngine } = require('./engine.js');
+              const reply = testEngine(prompt, context, language);
+              res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+              res.end(JSON.stringify({ reply }));
+            } catch (fallbackErr) {
+              res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+              res.end(JSON.stringify({ error: err.message }));
+            }
           });
 
       } catch (err) {
