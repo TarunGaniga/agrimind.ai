@@ -1363,6 +1363,18 @@
     document.getElementById('loading-banner').classList.add('active');
     document.getElementById('send-btn').disabled = true;
 
+    const BASE_SYSTEM_INSTRUCTION =
+      'You are AgriMind, a standalone agricultural expert for Indian farming. Answer ONLY questions related to agriculture, crops, seasonal weather suitability, planting months, soil types, fertilizers, crop medicines/pesticides, irrigation, and typical Indian market (mandi) price ranges in ₹ per quintal. Politely refuse any non-farming questions. Structure every answer clearly with short bullet points covering: (1) Season & Sowing Months, (2) Fertilizers & Nutrients, (3) Pest/Disease Medicine (with a reminder to verify exact dosage at a local Krishi Vigyan Kendra), and (4) Typical Market Price Range. Do not ask for or collect personal user information.';
+
+    const LANG_MAP = {
+      kn: { name: 'Kannada', native: 'ಕನ್ನಡ' },
+      te: { name: 'Telugu', native: 'తెలుగు' },
+      ta: { name: 'Tamil', native: 'தமிழ்' },
+      ml: { name: 'Malayalam', native: 'മലയാളം' },
+      hi: { name: 'Hindi', native: 'हिंदी' },
+      en: { name: 'English', native: 'English' }
+    };
+
     async function callGeminiDirectly(promptText, activeContext, lang) {
       let apiKey = getActiveApiKey();
       if (!apiKey) {
